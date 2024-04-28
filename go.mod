@@ -3,6 +3,7 @@ module rr-backend
 go 1.21.0
 
 require (
+	entgo.io/ent v0.13.1 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/ClickHouse/ch-go v0.58.2 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.17.1 // indirect
