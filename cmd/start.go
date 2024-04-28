@@ -3,6 +3,9 @@ package cmd
 import (
 	"rr-backend/config"
 	"rr-backend/config/env"
+	"rr-backend/routes"
+
+	"github.com/labstack/echo"
 )
 
 func Start() {
@@ -11,4 +14,10 @@ func Start() {
 	config := config.NewAppConfig()
 
 	RunMigration(config.GetSqlxClient().DB)
+
+	e := echo.New()
+
+	routes.InitRoutes(e, config)
+
+	e.Logger.Fatal(e.Start(":8080"))
 }
