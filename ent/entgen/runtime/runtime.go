@@ -2,7 +2,63 @@
 
 package runtime
 
-// The schema-stitching logic is generated in rr-backend/ent/entgen/runtime.go
+import (
+	"rr-backend/ent/entgen/tblsuperadmin"
+	"rr-backend/ent/schema"
+	"time"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	tblsuperadminMixin := schema.TblSuperAdmin{}.Mixin()
+	tblsuperadminMixinHooks0 := tblsuperadminMixin[0].Hooks()
+	tblsuperadmin.Hooks[0] = tblsuperadminMixinHooks0[0]
+	tblsuperadmin.Hooks[1] = tblsuperadminMixinHooks0[1]
+	tblsuperadmin.Hooks[2] = tblsuperadminMixinHooks0[2]
+	tblsuperadmin.Hooks[3] = tblsuperadminMixinHooks0[3]
+	tblsuperadminMixinFields0 := tblsuperadminMixin[0].Fields()
+	_ = tblsuperadminMixinFields0
+	tblsuperadminFields := schema.TblSuperAdmin{}.Fields()
+	_ = tblsuperadminFields
+	// tblsuperadminDescCreatedBy is the schema descriptor for CreatedBy field.
+	tblsuperadminDescCreatedBy := tblsuperadminMixinFields0[0].Descriptor()
+	// tblsuperadmin.CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
+	tblsuperadmin.CreatedByValidator = tblsuperadminDescCreatedBy.Validators[0].(func(string) error)
+	// tblsuperadminDescUpdatedBy is the schema descriptor for UpdatedBy field.
+	tblsuperadminDescUpdatedBy := tblsuperadminMixinFields0[1].Descriptor()
+	// tblsuperadmin.UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
+	tblsuperadmin.UpdatedByValidator = tblsuperadminDescUpdatedBy.Validators[0].(func(string) error)
+	// tblsuperadminDescDeletedBy is the schema descriptor for DeletedBy field.
+	tblsuperadminDescDeletedBy := tblsuperadminMixinFields0[2].Descriptor()
+	// tblsuperadmin.DeletedByValidator is a validator for the "DeletedBy" field. It is called by the builders before save.
+	tblsuperadmin.DeletedByValidator = tblsuperadminDescDeletedBy.Validators[0].(func(string) error)
+	// tblsuperadminDescCreatedAt is the schema descriptor for CreatedAt field.
+	tblsuperadminDescCreatedAt := tblsuperadminMixinFields0[5].Descriptor()
+	// tblsuperadmin.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	tblsuperadmin.DefaultCreatedAt = tblsuperadminDescCreatedAt.Default.(func() time.Time)
+	// tblsuperadminDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	tblsuperadminDescUpdatedAt := tblsuperadminMixinFields0[6].Descriptor()
+	// tblsuperadmin.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
+	tblsuperadmin.DefaultUpdatedAt = tblsuperadminDescUpdatedAt.Default.(time.Time)
+	// tblsuperadmin.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	tblsuperadmin.UpdateDefaultUpdatedAt = tblsuperadminDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tblsuperadminDescUserName is the schema descriptor for UserName field.
+	tblsuperadminDescUserName := tblsuperadminFields[0].Descriptor()
+	// tblsuperadmin.UserNameValidator is a validator for the "UserName" field. It is called by the builders before save.
+	tblsuperadmin.UserNameValidator = tblsuperadminDescUserName.Validators[0].(func(string) error)
+	// tblsuperadminDescPassWord is the schema descriptor for PassWord field.
+	tblsuperadminDescPassWord := tblsuperadminFields[1].Descriptor()
+	// tblsuperadmin.PassWordValidator is a validator for the "PassWord" field. It is called by the builders before save.
+	tblsuperadmin.PassWordValidator = tblsuperadminDescPassWord.Validators[0].(func(string) error)
+	// tblsuperadminDescID is the schema descriptor for id field.
+	tblsuperadminDescID := tblsuperadminMixinFields0[8].Descriptor()
+	// tblsuperadmin.DefaultID holds the default value on creation for the id field.
+	tblsuperadmin.DefaultID = tblsuperadminDescID.Default.(func() string)
+	// tblsuperadmin.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tblsuperadmin.IDValidator = tblsuperadminDescID.Validators[0].(func(string) error)
+}
 
 const (
 	Version = "v0.13.1"                                         // Version of ent codegen.

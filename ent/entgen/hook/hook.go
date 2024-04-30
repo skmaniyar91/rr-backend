@@ -8,6 +8,18 @@ import (
 	"rr-backend/ent/entgen"
 )
 
+// The TblSuperAdminFunc type is an adapter to allow the use of ordinary
+// function as TblSuperAdmin mutator.
+type TblSuperAdminFunc func(context.Context, *entgen.TblSuperAdminMutation) (entgen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TblSuperAdminFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
+	if mv, ok := m.(*entgen.TblSuperAdminMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblSuperAdminMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *entgen.UserMutation) (entgen.Value, error)
