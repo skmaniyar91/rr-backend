@@ -36,3 +36,7 @@ func Password() string {
 func MigrationDir() string {
 	return os.Getenv("MIGRATION_DIR")
 }
+
+func GetJWTKey() string {
+	return os.Getenv("JWT_KEY")
+}
