@@ -19,6 +19,8 @@ func init() {
 	tblsuperadmin.Hooks[1] = tblsuperadminMixinHooks0[1]
 	tblsuperadmin.Hooks[2] = tblsuperadminMixinHooks0[2]
 	tblsuperadmin.Hooks[3] = tblsuperadminMixinHooks0[3]
+	tblsuperadminMixinInters0 := tblsuperadminMixin[0].Interceptors()
+	tblsuperadmin.Interceptors[0] = tblsuperadminMixinInters0[0]
 	tblsuperadminMixinFields0 := tblsuperadminMixin[0].Fields()
 	_ = tblsuperadminMixinFields0
 	tblsuperadminFields := schema.TblSuperAdmin{}.Fields()
@@ -42,7 +44,7 @@ func init() {
 	// tblsuperadminDescUpdatedAt is the schema descriptor for UpdatedAt field.
 	tblsuperadminDescUpdatedAt := tblsuperadminMixinFields0[6].Descriptor()
 	// tblsuperadmin.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
-	tblsuperadmin.DefaultUpdatedAt = tblsuperadminDescUpdatedAt.Default.(time.Time)
+	tblsuperadmin.DefaultUpdatedAt = tblsuperadminDescUpdatedAt.Default.(func() time.Time)
 	// tblsuperadmin.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	tblsuperadmin.UpdateDefaultUpdatedAt = tblsuperadminDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// tblsuperadminDescUserName is the schema descriptor for UserName field.
@@ -65,6 +67,8 @@ func init() {
 	tblusers.Hooks[1] = tblusersMixinHooks0[1]
 	tblusers.Hooks[2] = tblusersMixinHooks0[2]
 	tblusers.Hooks[3] = tblusersMixinHooks0[3]
+	tblusersMixinInters0 := tblusersMixin[0].Interceptors()
+	tblusers.Interceptors[0] = tblusersMixinInters0[0]
 	tblusersMixinFields0 := tblusersMixin[0].Fields()
 	_ = tblusersMixinFields0
 	tblusersFields := schema.TblUSers{}.Fields()
@@ -88,7 +92,7 @@ func init() {
 	// tblusersDescUpdatedAt is the schema descriptor for UpdatedAt field.
 	tblusersDescUpdatedAt := tblusersMixinFields0[6].Descriptor()
 	// tblusers.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
-	tblusers.DefaultUpdatedAt = tblusersDescUpdatedAt.Default.(time.Time)
+	tblusers.DefaultUpdatedAt = tblusersDescUpdatedAt.Default.(func() time.Time)
 	// tblusers.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	tblusers.UpdateDefaultUpdatedAt = tblusersDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// tblusersDescUserName is the schema descriptor for UserName field.

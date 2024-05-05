@@ -203,7 +203,10 @@ func (tsac *TblSuperAdminCreate) defaults() error {
 		tsac.mutation.SetCreatedAt(v)
 	}
 	if _, ok := tsac.mutation.UpdatedAt(); !ok {
-		v := tblsuperadmin.DefaultUpdatedAt
+		if tblsuperadmin.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entgen: uninitialized tblsuperadmin.DefaultUpdatedAt (forgotten import entgen/runtime?)")
+		}
+		v := tblsuperadmin.DefaultUpdatedAt()
 		tsac.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := tsac.mutation.ID(); !ok {

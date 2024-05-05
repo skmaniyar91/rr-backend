@@ -217,7 +217,10 @@ func (tuc *TblUSersCreate) defaults() error {
 		tuc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := tuc.mutation.UpdatedAt(); !ok {
-		v := tblusers.DefaultUpdatedAt
+		if tblusers.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entgen: uninitialized tblusers.DefaultUpdatedAt (forgotten import entgen/runtime?)")
+		}
+		v := tblusers.DefaultUpdatedAt()
 		tuc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := tuc.mutation.ID(); !ok {

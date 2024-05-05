@@ -72,7 +72,8 @@ func ValidColumn(column string) bool {
 //
 //	import _ "rr-backend/ent/entgen/runtime"
 var (
-	Hooks [4]ent.Hook
+	Hooks        [4]ent.Hook
+	Interceptors [1]ent.Interceptor
 	// CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
 	CreatedByValidator func(string) error
 	// UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
@@ -82,7 +83,7 @@ var (
 	// DefaultCreatedAt holds the default value on creation for the "CreatedAt" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "UpdatedAt" field.
-	DefaultUpdatedAt time.Time
+	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "UpdatedAt" field.
 	UpdateDefaultUpdatedAt func() time.Time
 	// UserNameValidator is a validator for the "UserName" field. It is called by the builders before save.

@@ -323,7 +323,8 @@ func (c *TblSuperAdminClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *TblSuperAdminClient) Interceptors() []Interceptor {
-	return c.inters.TblSuperAdmin
+	inters := c.inters.TblSuperAdmin
+	return append(inters[:len(inters):len(inters)], tblsuperadmin.Interceptors[:]...)
 }
 
 func (c *TblSuperAdminClient) mutate(ctx context.Context, m *TblSuperAdminMutation) (Value, error) {
@@ -457,7 +458,8 @@ func (c *TblUSersClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *TblUSersClient) Interceptors() []Interceptor {
-	return c.inters.TblUSers
+	inters := c.inters.TblUSers
+	return append(inters[:len(inters):len(inters)], tblusers.Interceptors[:]...)
 }
 
 func (c *TblUSersClient) mutate(ctx context.Context, m *TblUSersMutation) (Value, error) {
