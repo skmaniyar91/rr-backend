@@ -62,13 +62,13 @@ func (tsac *TblSuperAdminCreate) SetNillableDeletedBy(s *string) *TblSuperAdminC
 	return tsac
 }
 
-// SetIP sets the "Ip" field.
+// SetIP sets the "IP" field.
 func (tsac *TblSuperAdminCreate) SetIP(s string) *TblSuperAdminCreate {
 	tsac.mutation.SetIP(s)
 	return tsac
 }
 
-// SetNillableIP sets the "Ip" field if the given value is not nil.
+// SetNillableIP sets the "IP" field if the given value is not nil.
 func (tsac *TblSuperAdminCreate) SetNillableIP(s *string) *TblSuperAdminCreate {
 	if s != nil {
 		tsac.SetIP(*s)

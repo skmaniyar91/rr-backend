@@ -4,7 +4,7 @@ package entgen
 
 import (
 	"fmt"
-	"rr-backend/ent/entgen/tblsuperadmin"
+	"rr-backend/ent/entgen/tblusers"
 	"strings"
 	"time"
 
@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// TblSuperAdmin is the model entity for the TblSuperAdmin schema.
-type TblSuperAdmin struct {
+// TblUSers is the model entity for the TblUSers schema.
+type TblUSers struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
@@ -35,19 +35,21 @@ type TblSuperAdmin struct {
 	DeletedAt *time.Time `json:"DeletedAt,omitempty"`
 	// UserName holds the value of the "UserName" field.
 	UserName string `json:"UserName,omitempty"`
-	// PassWord holds the value of the "PassWord" field.
-	PassWord     string `json:"PassWord,omitempty"`
+	// Password holds the value of the "Password" field.
+	Password string `json:"Password,omitempty"`
+	// Email holds the value of the "Email" field.
+	Email        *string `json:"Email,omitempty"`
 	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*TblSuperAdmin) scanValues(columns []string) ([]any, error) {
+func (*TblUSers) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case tblsuperadmin.FieldID, tblsuperadmin.FieldCreatedBy, tblsuperadmin.FieldUpdatedBy, tblsuperadmin.FieldDeletedBy, tblsuperadmin.FieldIP, tblsuperadmin.FieldUserAgent, tblsuperadmin.FieldUserName, tblsuperadmin.FieldPassWord:
+		case tblusers.FieldID, tblusers.FieldCreatedBy, tblusers.FieldUpdatedBy, tblusers.FieldDeletedBy, tblusers.FieldIP, tblusers.FieldUserAgent, tblusers.FieldUserName, tblusers.FieldPassword, tblusers.FieldEmail:
 			values[i] = new(sql.NullString)
-		case tblsuperadmin.FieldCreatedAt, tblsuperadmin.FieldUpdatedAt, tblsuperadmin.FieldDeletedAt:
+		case tblusers.FieldCreatedAt, tblusers.FieldUpdatedAt, tblusers.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -57,165 +59,177 @@ func (*TblSuperAdmin) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the TblSuperAdmin fields.
-func (tsa *TblSuperAdmin) assignValues(columns []string, values []any) error {
+// to the TblUSers fields.
+func (tu *TblUSers) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case tblsuperadmin.FieldID:
+		case tblusers.FieldID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				tsa.ID = value.String
+				tu.ID = value.String
 			}
-		case tblsuperadmin.FieldCreatedBy:
+		case tblusers.FieldCreatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedBy", values[i])
 			} else if value.Valid {
-				tsa.CreatedBy = new(string)
-				*tsa.CreatedBy = value.String
+				tu.CreatedBy = new(string)
+				*tu.CreatedBy = value.String
 			}
-		case tblsuperadmin.FieldUpdatedBy:
+		case tblusers.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UpdatedBy", values[i])
 			} else if value.Valid {
-				tsa.UpdatedBy = new(string)
-				*tsa.UpdatedBy = value.String
+				tu.UpdatedBy = new(string)
+				*tu.UpdatedBy = value.String
 			}
-		case tblsuperadmin.FieldDeletedBy:
+		case tblusers.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field DeletedBy", values[i])
 			} else if value.Valid {
-				tsa.DeletedBy = new(string)
-				*tsa.DeletedBy = value.String
+				tu.DeletedBy = new(string)
+				*tu.DeletedBy = value.String
 			}
-		case tblsuperadmin.FieldIP:
+		case tblusers.FieldIP:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field IP", values[i])
 			} else if value.Valid {
-				tsa.IP = new(string)
-				*tsa.IP = value.String
+				tu.IP = new(string)
+				*tu.IP = value.String
 			}
-		case tblsuperadmin.FieldUserAgent:
+		case tblusers.FieldUserAgent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UserAgent", values[i])
 			} else if value.Valid {
-				tsa.UserAgent = new(string)
-				*tsa.UserAgent = value.String
+				tu.UserAgent = new(string)
+				*tu.UserAgent = value.String
 			}
-		case tblsuperadmin.FieldCreatedAt:
+		case tblusers.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
 			} else if value.Valid {
-				tsa.CreatedAt = value.Time
+				tu.CreatedAt = value.Time
 			}
-		case tblsuperadmin.FieldUpdatedAt:
+		case tblusers.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
 			} else if value.Valid {
-				tsa.UpdatedAt = value.Time
+				tu.UpdatedAt = value.Time
 			}
-		case tblsuperadmin.FieldDeletedAt:
+		case tblusers.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field DeletedAt", values[i])
 			} else if value.Valid {
-				tsa.DeletedAt = new(time.Time)
-				*tsa.DeletedAt = value.Time
+				tu.DeletedAt = new(time.Time)
+				*tu.DeletedAt = value.Time
 			}
-		case tblsuperadmin.FieldUserName:
+		case tblusers.FieldUserName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UserName", values[i])
 			} else if value.Valid {
-				tsa.UserName = value.String
+				tu.UserName = value.String
 			}
-		case tblsuperadmin.FieldPassWord:
+		case tblusers.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field PassWord", values[i])
+				return fmt.Errorf("unexpected type %T for field Password", values[i])
 			} else if value.Valid {
-				tsa.PassWord = value.String
+				tu.Password = value.String
+			}
+		case tblusers.FieldEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field Email", values[i])
+			} else if value.Valid {
+				tu.Email = new(string)
+				*tu.Email = value.String
 			}
 		default:
-			tsa.selectValues.Set(columns[i], values[i])
+			tu.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the TblSuperAdmin.
+// Value returns the ent.Value that was dynamically selected and assigned to the TblUSers.
 // This includes values selected through modifiers, order, etc.
-func (tsa *TblSuperAdmin) Value(name string) (ent.Value, error) {
-	return tsa.selectValues.Get(name)
+func (tu *TblUSers) Value(name string) (ent.Value, error) {
+	return tu.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this TblSuperAdmin.
-// Note that you need to call TblSuperAdmin.Unwrap() before calling this method if this TblSuperAdmin
+// Update returns a builder for updating this TblUSers.
+// Note that you need to call TblUSers.Unwrap() before calling this method if this TblUSers
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (tsa *TblSuperAdmin) Update() *TblSuperAdminUpdateOne {
-	return NewTblSuperAdminClient(tsa.config).UpdateOne(tsa)
+func (tu *TblUSers) Update() *TblUSersUpdateOne {
+	return NewTblUSersClient(tu.config).UpdateOne(tu)
 }
 
-// Unwrap unwraps the TblSuperAdmin entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the TblUSers entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (tsa *TblSuperAdmin) Unwrap() *TblSuperAdmin {
-	_tx, ok := tsa.config.driver.(*txDriver)
+func (tu *TblUSers) Unwrap() *TblUSers {
+	_tx, ok := tu.config.driver.(*txDriver)
 	if !ok {
-		panic("entgen: TblSuperAdmin is not a transactional entity")
+		panic("entgen: TblUSers is not a transactional entity")
 	}
-	tsa.config.driver = _tx.drv
-	return tsa
+	tu.config.driver = _tx.drv
+	return tu
 }
 
 // String implements the fmt.Stringer.
-func (tsa *TblSuperAdmin) String() string {
+func (tu *TblUSers) String() string {
 	var builder strings.Builder
-	builder.WriteString("TblSuperAdmin(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", tsa.ID))
-	if v := tsa.CreatedBy; v != nil {
+	builder.WriteString("TblUSers(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", tu.ID))
+	if v := tu.CreatedBy; v != nil {
 		builder.WriteString("CreatedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tsa.UpdatedBy; v != nil {
+	if v := tu.UpdatedBy; v != nil {
 		builder.WriteString("UpdatedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tsa.DeletedBy; v != nil {
+	if v := tu.DeletedBy; v != nil {
 		builder.WriteString("DeletedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tsa.IP; v != nil {
+	if v := tu.IP; v != nil {
 		builder.WriteString("IP=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tsa.UserAgent; v != nil {
+	if v := tu.UserAgent; v != nil {
 		builder.WriteString("UserAgent=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("CreatedAt=")
-	builder.WriteString(tsa.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("UpdatedAt=")
-	builder.WriteString(tsa.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(tu.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := tsa.DeletedAt; v != nil {
+	if v := tu.DeletedAt; v != nil {
 		builder.WriteString("DeletedAt=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("UserName=")
-	builder.WriteString(tsa.UserName)
+	builder.WriteString(tu.UserName)
 	builder.WriteString(", ")
-	builder.WriteString("PassWord=")
-	builder.WriteString(tsa.PassWord)
+	builder.WriteString("Password=")
+	builder.WriteString(tu.Password)
+	builder.WriteString(", ")
+	if v := tu.Email; v != nil {
+		builder.WriteString("Email=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// TblSuperAdmins is a parsable slice of TblSuperAdmin.
-type TblSuperAdmins []*TblSuperAdmin
+// TblUSersSlice is a parsable slice of TblUSers.
+type TblUSersSlice []*TblUSers

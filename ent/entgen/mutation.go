@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"rr-backend/ent/entgen/predicate"
 	"rr-backend/ent/entgen/tblsuperadmin"
+	"rr-backend/ent/entgen/tblusers"
 	"sync"
 	"time"
 
@@ -25,7 +26,7 @@ const (
 
 	// Node types.
 	TypeTblSuperAdmin = "TblSuperAdmin"
-	TypeUser          = "User"
+	TypeTblUSers      = "TblUSers"
 )
 
 // TblSuperAdminMutation represents an operation that mutates the TblSuperAdmin nodes in the graph.
@@ -37,7 +38,7 @@ type TblSuperAdminMutation struct {
 	_CreatedBy    *string
 	_UpdatedBy    *string
 	_DeletedBy    *string
-	_Ip           *string
+	_IP           *string
 	_UserAgent    *string
 	_CreatedAt    *time.Time
 	_UpdatedAt    *time.Time
@@ -301,21 +302,21 @@ func (m *TblSuperAdminMutation) ResetDeletedBy() {
 	delete(m.clearedFields, tblsuperadmin.FieldDeletedBy)
 }
 
-// SetIP sets the "Ip" field.
+// SetIP sets the "IP" field.
 func (m *TblSuperAdminMutation) SetIP(s string) {
-	m._Ip = &s
+	m._IP = &s
 }
 
-// IP returns the value of the "Ip" field in the mutation.
+// IP returns the value of the "IP" field in the mutation.
 func (m *TblSuperAdminMutation) IP() (r string, exists bool) {
-	v := m._Ip
+	v := m._IP
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIP returns the old "Ip" field's value of the TblSuperAdmin entity.
+// OldIP returns the old "IP" field's value of the TblSuperAdmin entity.
 // If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *TblSuperAdminMutation) OldIP(ctx context.Context) (v *string, err error) {
@@ -332,21 +333,21 @@ func (m *TblSuperAdminMutation) OldIP(ctx context.Context) (v *string, err error
 	return oldValue.IP, nil
 }
 
-// ClearIP clears the value of the "Ip" field.
+// ClearIP clears the value of the "IP" field.
 func (m *TblSuperAdminMutation) ClearIP() {
-	m._Ip = nil
+	m._IP = nil
 	m.clearedFields[tblsuperadmin.FieldIP] = struct{}{}
 }
 
-// IPCleared returns if the "Ip" field was cleared in this mutation.
+// IPCleared returns if the "IP" field was cleared in this mutation.
 func (m *TblSuperAdminMutation) IPCleared() bool {
 	_, ok := m.clearedFields[tblsuperadmin.FieldIP]
 	return ok
 }
 
-// ResetIP resets all changes to the "Ip" field.
+// ResetIP resets all changes to the "IP" field.
 func (m *TblSuperAdminMutation) ResetIP() {
-	m._Ip = nil
+	m._IP = nil
 	delete(m.clearedFields, tblsuperadmin.FieldIP)
 }
 
@@ -636,7 +637,7 @@ func (m *TblSuperAdminMutation) Fields() []string {
 	if m._DeletedBy != nil {
 		fields = append(fields, tblsuperadmin.FieldDeletedBy)
 	}
-	if m._Ip != nil {
+	if m._IP != nil {
 		fields = append(fields, tblsuperadmin.FieldIP)
 	}
 	if m._UserAgent != nil {
@@ -963,29 +964,40 @@ func (m *TblSuperAdminMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown TblSuperAdmin edge %s", name)
 }
 
-// UserMutation represents an operation that mutates the User nodes in the graph.
-type UserMutation struct {
+// TblUSersMutation represents an operation that mutates the TblUSers nodes in the graph.
+type TblUSersMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
+	_CreatedBy    *string
+	_UpdatedBy    *string
+	_DeletedBy    *string
+	_IP           *string
+	_UserAgent    *string
+	_CreatedAt    *time.Time
+	_UpdatedAt    *time.Time
+	_DeletedAt    *time.Time
+	_UserName     *string
+	_Password     *string
+	_Email        *string
 	clearedFields map[string]struct{}
 	done          bool
-	oldValue      func(context.Context) (*User, error)
-	predicates    []predicate.User
+	oldValue      func(context.Context) (*TblUSers, error)
+	predicates    []predicate.TblUSers
 }
 
-var _ ent.Mutation = (*UserMutation)(nil)
+var _ ent.Mutation = (*TblUSersMutation)(nil)
 
-// userOption allows management of the mutation configuration using functional options.
-type userOption func(*UserMutation)
+// tblusersOption allows management of the mutation configuration using functional options.
+type tblusersOption func(*TblUSersMutation)
 
-// newUserMutation creates new mutation for the User entity.
-func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
-	m := &UserMutation{
+// newTblUSersMutation creates new mutation for the TblUSers entity.
+func newTblUSersMutation(c config, op Op, opts ...tblusersOption) *TblUSersMutation {
+	m := &TblUSersMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeUser,
+		typ:           TypeTblUSers,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -994,20 +1006,20 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 	return m
 }
 
-// withUserID sets the ID field of the mutation.
-func withUserID(id int) userOption {
-	return func(m *UserMutation) {
+// withTblUSersID sets the ID field of the mutation.
+func withTblUSersID(id string) tblusersOption {
+	return func(m *TblUSersMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *User
+			value *TblUSers
 		)
-		m.oldValue = func(ctx context.Context) (*User, error) {
+		m.oldValue = func(ctx context.Context) (*TblUSers, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().User.Get(ctx, id)
+					value, err = m.Client().TblUSers.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -1016,10 +1028,10 @@ func withUserID(id int) userOption {
 	}
 }
 
-// withUser sets the old User of the mutation.
-func withUser(node *User) userOption {
-	return func(m *UserMutation) {
-		m.oldValue = func(context.Context) (*User, error) {
+// withTblUSers sets the old TblUSers of the mutation.
+func withTblUSers(node *TblUSers) tblusersOption {
+	return func(m *TblUSersMutation) {
+		m.oldValue = func(context.Context) (*TblUSers, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -1028,7 +1040,7 @@ func withUser(node *User) userOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m UserMutation) Client() *Client {
+func (m TblUSersMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -1036,7 +1048,7 @@ func (m UserMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m UserMutation) Tx() (*Tx, error) {
+func (m TblUSersMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("entgen: mutation is not running in a transaction")
 	}
@@ -1045,9 +1057,15 @@ func (m UserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TblUSers entities.
+func (m *TblUSersMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id int, exists bool) {
+func (m *TblUSersMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1058,30 +1076,517 @@ func (m *UserMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *TblUSersMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().User.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().TblUSers.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
-// Where appends a list predicates to the UserMutation builder.
-func (m *UserMutation) Where(ps ...predicate.User) {
+// SetCreatedBy sets the "CreatedBy" field.
+func (m *TblUSersMutation) SetCreatedBy(s string) {
+	m._CreatedBy = &s
+}
+
+// CreatedBy returns the value of the "CreatedBy" field in the mutation.
+func (m *TblUSersMutation) CreatedBy() (r string, exists bool) {
+	v := m._CreatedBy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "CreatedBy" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldCreatedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ClearCreatedBy clears the value of the "CreatedBy" field.
+func (m *TblUSersMutation) ClearCreatedBy() {
+	m._CreatedBy = nil
+	m.clearedFields[tblusers.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "CreatedBy" field was cleared in this mutation.
+func (m *TblUSersMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "CreatedBy" field.
+func (m *TblUSersMutation) ResetCreatedBy() {
+	m._CreatedBy = nil
+	delete(m.clearedFields, tblusers.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "UpdatedBy" field.
+func (m *TblUSersMutation) SetUpdatedBy(s string) {
+	m._UpdatedBy = &s
+}
+
+// UpdatedBy returns the value of the "UpdatedBy" field in the mutation.
+func (m *TblUSersMutation) UpdatedBy() (r string, exists bool) {
+	v := m._UpdatedBy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "UpdatedBy" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldUpdatedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// ClearUpdatedBy clears the value of the "UpdatedBy" field.
+func (m *TblUSersMutation) ClearUpdatedBy() {
+	m._UpdatedBy = nil
+	m.clearedFields[tblusers.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "UpdatedBy" field was cleared in this mutation.
+func (m *TblUSersMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "UpdatedBy" field.
+func (m *TblUSersMutation) ResetUpdatedBy() {
+	m._UpdatedBy = nil
+	delete(m.clearedFields, tblusers.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "DeletedBy" field.
+func (m *TblUSersMutation) SetDeletedBy(s string) {
+	m._DeletedBy = &s
+}
+
+// DeletedBy returns the value of the "DeletedBy" field in the mutation.
+func (m *TblUSersMutation) DeletedBy() (r string, exists bool) {
+	v := m._DeletedBy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "DeletedBy" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldDeletedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// ClearDeletedBy clears the value of the "DeletedBy" field.
+func (m *TblUSersMutation) ClearDeletedBy() {
+	m._DeletedBy = nil
+	m.clearedFields[tblusers.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "DeletedBy" field was cleared in this mutation.
+func (m *TblUSersMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "DeletedBy" field.
+func (m *TblUSersMutation) ResetDeletedBy() {
+	m._DeletedBy = nil
+	delete(m.clearedFields, tblusers.FieldDeletedBy)
+}
+
+// SetIP sets the "IP" field.
+func (m *TblUSersMutation) SetIP(s string) {
+	m._IP = &s
+}
+
+// IP returns the value of the "IP" field in the mutation.
+func (m *TblUSersMutation) IP() (r string, exists bool) {
+	v := m._IP
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIP returns the old "IP" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldIP(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIP is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIP requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIP: %w", err)
+	}
+	return oldValue.IP, nil
+}
+
+// ClearIP clears the value of the "IP" field.
+func (m *TblUSersMutation) ClearIP() {
+	m._IP = nil
+	m.clearedFields[tblusers.FieldIP] = struct{}{}
+}
+
+// IPCleared returns if the "IP" field was cleared in this mutation.
+func (m *TblUSersMutation) IPCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldIP]
+	return ok
+}
+
+// ResetIP resets all changes to the "IP" field.
+func (m *TblUSersMutation) ResetIP() {
+	m._IP = nil
+	delete(m.clearedFields, tblusers.FieldIP)
+}
+
+// SetUserAgent sets the "UserAgent" field.
+func (m *TblUSersMutation) SetUserAgent(s string) {
+	m._UserAgent = &s
+}
+
+// UserAgent returns the value of the "UserAgent" field in the mutation.
+func (m *TblUSersMutation) UserAgent() (r string, exists bool) {
+	v := m._UserAgent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserAgent returns the old "UserAgent" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldUserAgent(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserAgent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserAgent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserAgent: %w", err)
+	}
+	return oldValue.UserAgent, nil
+}
+
+// ClearUserAgent clears the value of the "UserAgent" field.
+func (m *TblUSersMutation) ClearUserAgent() {
+	m._UserAgent = nil
+	m.clearedFields[tblusers.FieldUserAgent] = struct{}{}
+}
+
+// UserAgentCleared returns if the "UserAgent" field was cleared in this mutation.
+func (m *TblUSersMutation) UserAgentCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldUserAgent]
+	return ok
+}
+
+// ResetUserAgent resets all changes to the "UserAgent" field.
+func (m *TblUSersMutation) ResetUserAgent() {
+	m._UserAgent = nil
+	delete(m.clearedFields, tblusers.FieldUserAgent)
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *TblUSersMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *TblUSersMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *TblUSersMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *TblUSersMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *TblUSersMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *TblUSersMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
+}
+
+// SetDeletedAt sets the "DeletedAt" field.
+func (m *TblUSersMutation) SetDeletedAt(t time.Time) {
+	m._DeletedAt = &t
+}
+
+// DeletedAt returns the value of the "DeletedAt" field in the mutation.
+func (m *TblUSersMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m._DeletedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "DeletedAt" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "DeletedAt" field.
+func (m *TblUSersMutation) ClearDeletedAt() {
+	m._DeletedAt = nil
+	m.clearedFields[tblusers.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "DeletedAt" field was cleared in this mutation.
+func (m *TblUSersMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "DeletedAt" field.
+func (m *TblUSersMutation) ResetDeletedAt() {
+	m._DeletedAt = nil
+	delete(m.clearedFields, tblusers.FieldDeletedAt)
+}
+
+// SetUserName sets the "UserName" field.
+func (m *TblUSersMutation) SetUserName(s string) {
+	m._UserName = &s
+}
+
+// UserName returns the value of the "UserName" field in the mutation.
+func (m *TblUSersMutation) UserName() (r string, exists bool) {
+	v := m._UserName
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserName returns the old "UserName" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldUserName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserName: %w", err)
+	}
+	return oldValue.UserName, nil
+}
+
+// ResetUserName resets all changes to the "UserName" field.
+func (m *TblUSersMutation) ResetUserName() {
+	m._UserName = nil
+}
+
+// SetPassword sets the "Password" field.
+func (m *TblUSersMutation) SetPassword(s string) {
+	m._Password = &s
+}
+
+// Password returns the value of the "Password" field in the mutation.
+func (m *TblUSersMutation) Password() (r string, exists bool) {
+	v := m._Password
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPassword returns the old "Password" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldPassword(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPassword requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
+	}
+	return oldValue.Password, nil
+}
+
+// ResetPassword resets all changes to the "Password" field.
+func (m *TblUSersMutation) ResetPassword() {
+	m._Password = nil
+}
+
+// SetEmail sets the "Email" field.
+func (m *TblUSersMutation) SetEmail(s string) {
+	m._Email = &s
+}
+
+// Email returns the value of the "Email" field in the mutation.
+func (m *TblUSersMutation) Email() (r string, exists bool) {
+	v := m._Email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "Email" field's value of the TblUSers entity.
+// If the TblUSers object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblUSersMutation) OldEmail(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ClearEmail clears the value of the "Email" field.
+func (m *TblUSersMutation) ClearEmail() {
+	m._Email = nil
+	m.clearedFields[tblusers.FieldEmail] = struct{}{}
+}
+
+// EmailCleared returns if the "Email" field was cleared in this mutation.
+func (m *TblUSersMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[tblusers.FieldEmail]
+	return ok
+}
+
+// ResetEmail resets all changes to the "Email" field.
+func (m *TblUSersMutation) ResetEmail() {
+	m._Email = nil
+	delete(m.clearedFields, tblusers.FieldEmail)
+}
+
+// Where appends a list predicates to the TblUSersMutation builder.
+func (m *TblUSersMutation) Where(ps ...predicate.TblUSers) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the UserMutation builder. Using this method,
+// WhereP appends storage-level predicates to the TblUSersMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *UserMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.User, len(ps))
+func (m *TblUSersMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TblUSers, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -1089,140 +1594,380 @@ func (m *UserMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *UserMutation) Op() Op {
+func (m *TblUSersMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *UserMutation) SetOp(op Op) {
+func (m *TblUSersMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (User).
-func (m *UserMutation) Type() string {
+// Type returns the node type of this mutation (TblUSers).
+func (m *TblUSersMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+func (m *TblUSersMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m._CreatedBy != nil {
+		fields = append(fields, tblusers.FieldCreatedBy)
+	}
+	if m._UpdatedBy != nil {
+		fields = append(fields, tblusers.FieldUpdatedBy)
+	}
+	if m._DeletedBy != nil {
+		fields = append(fields, tblusers.FieldDeletedBy)
+	}
+	if m._IP != nil {
+		fields = append(fields, tblusers.FieldIP)
+	}
+	if m._UserAgent != nil {
+		fields = append(fields, tblusers.FieldUserAgent)
+	}
+	if m._CreatedAt != nil {
+		fields = append(fields, tblusers.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, tblusers.FieldUpdatedAt)
+	}
+	if m._DeletedAt != nil {
+		fields = append(fields, tblusers.FieldDeletedAt)
+	}
+	if m._UserName != nil {
+		fields = append(fields, tblusers.FieldUserName)
+	}
+	if m._Password != nil {
+		fields = append(fields, tblusers.FieldPassword)
+	}
+	if m._Email != nil {
+		fields = append(fields, tblusers.FieldEmail)
+	}
 	return fields
 }
 
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *UserMutation) Field(name string) (ent.Value, bool) {
+func (m *TblUSersMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tblusers.FieldCreatedBy:
+		return m.CreatedBy()
+	case tblusers.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case tblusers.FieldDeletedBy:
+		return m.DeletedBy()
+	case tblusers.FieldIP:
+		return m.IP()
+	case tblusers.FieldUserAgent:
+		return m.UserAgent()
+	case tblusers.FieldCreatedAt:
+		return m.CreatedAt()
+	case tblusers.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case tblusers.FieldDeletedAt:
+		return m.DeletedAt()
+	case tblusers.FieldUserName:
+		return m.UserName()
+	case tblusers.FieldPassword:
+		return m.Password()
+	case tblusers.FieldEmail:
+		return m.Email()
+	}
 	return nil, false
 }
 
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	return nil, fmt.Errorf("unknown User field %s", name)
+func (m *TblUSersMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tblusers.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case tblusers.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case tblusers.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case tblusers.FieldIP:
+		return m.OldIP(ctx)
+	case tblusers.FieldUserAgent:
+		return m.OldUserAgent(ctx)
+	case tblusers.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case tblusers.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case tblusers.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case tblusers.FieldUserName:
+		return m.OldUserName(ctx)
+	case tblusers.FieldPassword:
+		return m.OldPassword(ctx)
+	case tblusers.FieldEmail:
+		return m.OldEmail(ctx)
+	}
+	return nil, fmt.Errorf("unknown TblUSers field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *UserMutation) SetField(name string, value ent.Value) error {
+func (m *TblUSersMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case tblusers.FieldCreatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case tblusers.FieldUpdatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case tblusers.FieldDeletedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case tblusers.FieldIP:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIP(v)
+		return nil
+	case tblusers.FieldUserAgent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserAgent(v)
+		return nil
+	case tblusers.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case tblusers.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case tblusers.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case tblusers.FieldUserName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserName(v)
+		return nil
+	case tblusers.FieldPassword:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPassword(v)
+		return nil
+	case tblusers.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
 	}
-	return fmt.Errorf("unknown User field %s", name)
+	return fmt.Errorf("unknown TblUSers field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *UserMutation) AddedFields() []string {
+func (m *TblUSersMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+func (m *TblUSersMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *UserMutation) AddField(name string, value ent.Value) error {
-	return fmt.Errorf("unknown User numeric field %s", name)
+func (m *TblUSersMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TblUSers numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *UserMutation) ClearedFields() []string {
-	return nil
+func (m *TblUSersMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(tblusers.FieldCreatedBy) {
+		fields = append(fields, tblusers.FieldCreatedBy)
+	}
+	if m.FieldCleared(tblusers.FieldUpdatedBy) {
+		fields = append(fields, tblusers.FieldUpdatedBy)
+	}
+	if m.FieldCleared(tblusers.FieldDeletedBy) {
+		fields = append(fields, tblusers.FieldDeletedBy)
+	}
+	if m.FieldCleared(tblusers.FieldIP) {
+		fields = append(fields, tblusers.FieldIP)
+	}
+	if m.FieldCleared(tblusers.FieldUserAgent) {
+		fields = append(fields, tblusers.FieldUserAgent)
+	}
+	if m.FieldCleared(tblusers.FieldDeletedAt) {
+		fields = append(fields, tblusers.FieldDeletedAt)
+	}
+	if m.FieldCleared(tblusers.FieldEmail) {
+		fields = append(fields, tblusers.FieldEmail)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *UserMutation) FieldCleared(name string) bool {
+func (m *TblUSersMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *UserMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown User nullable field %s", name)
+func (m *TblUSersMutation) ClearField(name string) error {
+	switch name {
+	case tblusers.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case tblusers.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case tblusers.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case tblusers.FieldIP:
+		m.ClearIP()
+		return nil
+	case tblusers.FieldUserAgent:
+		m.ClearUserAgent()
+		return nil
+	case tblusers.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case tblusers.FieldEmail:
+		m.ClearEmail()
+		return nil
+	}
+	return fmt.Errorf("unknown TblUSers nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *UserMutation) ResetField(name string) error {
-	return fmt.Errorf("unknown User field %s", name)
+func (m *TblUSersMutation) ResetField(name string) error {
+	switch name {
+	case tblusers.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case tblusers.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case tblusers.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case tblusers.FieldIP:
+		m.ResetIP()
+		return nil
+	case tblusers.FieldUserAgent:
+		m.ResetUserAgent()
+		return nil
+	case tblusers.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case tblusers.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case tblusers.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case tblusers.FieldUserName:
+		m.ResetUserName()
+		return nil
+	case tblusers.FieldPassword:
+		m.ResetPassword()
+		return nil
+	case tblusers.FieldEmail:
+		m.ResetEmail()
+		return nil
+	}
+	return fmt.Errorf("unknown TblUSers field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *UserMutation) AddedEdges() []string {
+func (m *TblUSersMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *UserMutation) AddedIDs(name string) []ent.Value {
+func (m *TblUSersMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *UserMutation) RemovedEdges() []string {
+func (m *TblUSersMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *UserMutation) RemovedIDs(name string) []ent.Value {
+func (m *TblUSersMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *UserMutation) ClearedEdges() []string {
+func (m *TblUSersMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *UserMutation) EdgeCleared(name string) bool {
+func (m *TblUSersMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *UserMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown User unique edge %s", name)
+func (m *TblUSersMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TblUSers unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *UserMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown User edge %s", name)
+func (m *TblUSersMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TblUSers edge %s", name)
 }

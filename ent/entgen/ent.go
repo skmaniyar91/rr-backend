@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"rr-backend/ent/entgen/tblsuperadmin"
-	"rr-backend/ent/entgen/user"
+	"rr-backend/ent/entgen/tblusers"
 	"sync"
 
 	"entgo.io/ent"
@@ -75,7 +75,7 @@ func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			tblsuperadmin.Table: tblsuperadmin.ValidColumn,
-			user.Table:          user.ValidColumn,
+			tblusers.Table:      tblusers.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

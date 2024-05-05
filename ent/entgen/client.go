@@ -12,7 +12,7 @@ import (
 	"rr-backend/ent/entgen/migrate"
 
 	"rr-backend/ent/entgen/tblsuperadmin"
-	"rr-backend/ent/entgen/user"
+	"rr-backend/ent/entgen/tblusers"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -26,8 +26,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// TblSuperAdmin is the client for interacting with the TblSuperAdmin builders.
 	TblSuperAdmin *TblSuperAdminClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// TblUSers is the client for interacting with the TblUSers builders.
+	TblUSers *TblUSersClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -40,7 +40,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.TblSuperAdmin = NewTblSuperAdminClient(c.config)
-	c.User = NewUserClient(c.config)
+	c.TblUSers = NewTblUSersClient(c.config)
 }
 
 type (
@@ -134,7 +134,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:           ctx,
 		config:        cfg,
 		TblSuperAdmin: NewTblSuperAdminClient(cfg),
-		User:          NewUserClient(cfg),
+		TblUSers:      NewTblUSersClient(cfg),
 	}, nil
 }
 
@@ -155,7 +155,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:           ctx,
 		config:        cfg,
 		TblSuperAdmin: NewTblSuperAdminClient(cfg),
-		User:          NewUserClient(cfg),
+		TblUSers:      NewTblUSersClient(cfg),
 	}, nil
 }
 
@@ -185,14 +185,14 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.TblSuperAdmin.Use(hooks...)
-	c.User.Use(hooks...)
+	c.TblUSers.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.TblSuperAdmin.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	c.TblUSers.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -200,8 +200,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *TblSuperAdminMutation:
 		return c.TblSuperAdmin.mutate(ctx, m)
-	case *UserMutation:
-		return c.User.mutate(ctx, m)
+	case *TblUSersMutation:
+		return c.TblUSers.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("entgen: unknown mutation type %T", m)
 	}
@@ -341,107 +341,107 @@ func (c *TblSuperAdminClient) mutate(ctx context.Context, m *TblSuperAdminMutati
 	}
 }
 
-// UserClient is a client for the User schema.
-type UserClient struct {
+// TblUSersClient is a client for the TblUSers schema.
+type TblUSersClient struct {
 	config
 }
 
-// NewUserClient returns a client for the User from the given config.
-func NewUserClient(c config) *UserClient {
-	return &UserClient{config: c}
+// NewTblUSersClient returns a client for the TblUSers from the given config.
+func NewTblUSersClient(c config) *TblUSersClient {
+	return &TblUSersClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
-func (c *UserClient) Use(hooks ...Hook) {
-	c.hooks.User = append(c.hooks.User, hooks...)
+// A call to `Use(f, g, h)` equals to `tblusers.Hooks(f(g(h())))`.
+func (c *TblUSersClient) Use(hooks ...Hook) {
+	c.hooks.TblUSers = append(c.hooks.TblUSers, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
-func (c *UserClient) Intercept(interceptors ...Interceptor) {
-	c.inters.User = append(c.inters.User, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `tblusers.Intercept(f(g(h())))`.
+func (c *TblUSersClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TblUSers = append(c.inters.TblUSers, interceptors...)
 }
 
-// Create returns a builder for creating a User entity.
-func (c *UserClient) Create() *UserCreate {
-	mutation := newUserMutation(c.config, OpCreate)
-	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a TblUSers entity.
+func (c *TblUSersClient) Create() *TblUSersCreate {
+	mutation := newTblUSersMutation(c.config, OpCreate)
+	return &TblUSersCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of User entities.
-func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
-	return &UserCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of TblUSers entities.
+func (c *TblUSersClient) CreateBulk(builders ...*TblUSersCreate) *TblUSersCreateBulk {
+	return &TblUSersCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
+func (c *TblUSersClient) MapCreateBulk(slice any, setFunc func(*TblUSersCreate, int)) *TblUSersCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &TblUSersCreateBulk{err: fmt.Errorf("calling to TblUSersClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*UserCreate, rv.Len())
+	builders := make([]*TblUSersCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &UserCreateBulk{config: c.config, builders: builders}
+	return &TblUSersCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for User.
-func (c *UserClient) Update() *UserUpdate {
-	mutation := newUserMutation(c.config, OpUpdate)
-	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for TblUSers.
+func (c *TblUSersClient) Update() *TblUSersUpdate {
+	mutation := newTblUSersMutation(c.config, OpUpdate)
+	return &TblUSersUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *TblUSersClient) UpdateOne(tu *TblUSers) *TblUSersUpdateOne {
+	mutation := newTblUSersMutation(c.config, OpUpdateOne, withTblUSers(tu))
+	return &TblUSersUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *TblUSersClient) UpdateOneID(id string) *TblUSersUpdateOne {
+	mutation := newTblUSersMutation(c.config, OpUpdateOne, withTblUSersID(id))
+	return &TblUSersUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for User.
-func (c *UserClient) Delete() *UserDelete {
-	mutation := newUserMutation(c.config, OpDelete)
-	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for TblUSers.
+func (c *TblUSersClient) Delete() *TblUSersDelete {
+	mutation := newTblUSersMutation(c.config, OpDelete)
+	return &TblUSersDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
-	return c.DeleteOneID(u.ID)
+func (c *TblUSersClient) DeleteOne(tu *TblUSers) *TblUSersDeleteOne {
+	return c.DeleteOneID(tu.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
-	builder := c.Delete().Where(user.ID(id))
+func (c *TblUSersClient) DeleteOneID(id string) *TblUSersDeleteOne {
+	builder := c.Delete().Where(tblusers.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &UserDeleteOne{builder}
+	return &TblUSersDeleteOne{builder}
 }
 
-// Query returns a query builder for User.
-func (c *UserClient) Query() *UserQuery {
-	return &UserQuery{
+// Query returns a query builder for TblUSers.
+func (c *TblUSersClient) Query() *TblUSersQuery {
+	return &TblUSersQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeUser},
+		ctx:    &QueryContext{Type: TypeTblUSers},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
-	return c.Query().Where(user.ID(id)).Only(ctx)
+// Get returns a TblUSers entity by its id.
+func (c *TblUSersClient) Get(ctx context.Context, id string) (*TblUSers, error) {
+	return c.Query().Where(tblusers.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
+func (c *TblUSersClient) GetX(ctx context.Context, id string) *TblUSers {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -450,36 +450,37 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 }
 
 // Hooks returns the client hooks.
-func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+func (c *TblUSersClient) Hooks() []Hook {
+	hooks := c.hooks.TblUSers
+	return append(hooks[:len(hooks):len(hooks)], tblusers.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
-func (c *UserClient) Interceptors() []Interceptor {
-	return c.inters.User
+func (c *TblUSersClient) Interceptors() []Interceptor {
+	return c.inters.TblUSers
 }
 
-func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
+func (c *TblUSersClient) mutate(ctx context.Context, m *TblUSersMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&TblUSersCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&TblUSersUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&TblUSersUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&TblUSersDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("entgen: unknown User mutation op: %q", m.Op())
+		return nil, fmt.Errorf("entgen: unknown TblUSers mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		TblSuperAdmin, User []ent.Hook
+		TblSuperAdmin, TblUSers []ent.Hook
 	}
 	inters struct {
-		TblSuperAdmin, User []ent.Interceptor
+		TblSuperAdmin, TblUSers []ent.Interceptor
 	}
 )

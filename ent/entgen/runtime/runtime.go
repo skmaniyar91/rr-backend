@@ -4,6 +4,7 @@ package runtime
 
 import (
 	"rr-backend/ent/entgen/tblsuperadmin"
+	"rr-backend/ent/entgen/tblusers"
 	"rr-backend/ent/schema"
 	"time"
 )
@@ -58,6 +59,56 @@ func init() {
 	tblsuperadmin.DefaultID = tblsuperadminDescID.Default.(func() string)
 	// tblsuperadmin.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	tblsuperadmin.IDValidator = tblsuperadminDescID.Validators[0].(func(string) error)
+	tblusersMixin := schema.TblUSers{}.Mixin()
+	tblusersMixinHooks0 := tblusersMixin[0].Hooks()
+	tblusers.Hooks[0] = tblusersMixinHooks0[0]
+	tblusers.Hooks[1] = tblusersMixinHooks0[1]
+	tblusers.Hooks[2] = tblusersMixinHooks0[2]
+	tblusers.Hooks[3] = tblusersMixinHooks0[3]
+	tblusersMixinFields0 := tblusersMixin[0].Fields()
+	_ = tblusersMixinFields0
+	tblusersFields := schema.TblUSers{}.Fields()
+	_ = tblusersFields
+	// tblusersDescCreatedBy is the schema descriptor for CreatedBy field.
+	tblusersDescCreatedBy := tblusersMixinFields0[0].Descriptor()
+	// tblusers.CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
+	tblusers.CreatedByValidator = tblusersDescCreatedBy.Validators[0].(func(string) error)
+	// tblusersDescUpdatedBy is the schema descriptor for UpdatedBy field.
+	tblusersDescUpdatedBy := tblusersMixinFields0[1].Descriptor()
+	// tblusers.UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
+	tblusers.UpdatedByValidator = tblusersDescUpdatedBy.Validators[0].(func(string) error)
+	// tblusersDescDeletedBy is the schema descriptor for DeletedBy field.
+	tblusersDescDeletedBy := tblusersMixinFields0[2].Descriptor()
+	// tblusers.DeletedByValidator is a validator for the "DeletedBy" field. It is called by the builders before save.
+	tblusers.DeletedByValidator = tblusersDescDeletedBy.Validators[0].(func(string) error)
+	// tblusersDescCreatedAt is the schema descriptor for CreatedAt field.
+	tblusersDescCreatedAt := tblusersMixinFields0[5].Descriptor()
+	// tblusers.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	tblusers.DefaultCreatedAt = tblusersDescCreatedAt.Default.(func() time.Time)
+	// tblusersDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	tblusersDescUpdatedAt := tblusersMixinFields0[6].Descriptor()
+	// tblusers.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
+	tblusers.DefaultUpdatedAt = tblusersDescUpdatedAt.Default.(time.Time)
+	// tblusers.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	tblusers.UpdateDefaultUpdatedAt = tblusersDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tblusersDescUserName is the schema descriptor for UserName field.
+	tblusersDescUserName := tblusersFields[0].Descriptor()
+	// tblusers.UserNameValidator is a validator for the "UserName" field. It is called by the builders before save.
+	tblusers.UserNameValidator = tblusersDescUserName.Validators[0].(func(string) error)
+	// tblusersDescPassword is the schema descriptor for Password field.
+	tblusersDescPassword := tblusersFields[1].Descriptor()
+	// tblusers.PasswordValidator is a validator for the "Password" field. It is called by the builders before save.
+	tblusers.PasswordValidator = tblusersDescPassword.Validators[0].(func(string) error)
+	// tblusersDescEmail is the schema descriptor for Email field.
+	tblusersDescEmail := tblusersFields[2].Descriptor()
+	// tblusers.EmailValidator is a validator for the "Email" field. It is called by the builders before save.
+	tblusers.EmailValidator = tblusersDescEmail.Validators[0].(func(string) error)
+	// tblusersDescID is the schema descriptor for id field.
+	tblusersDescID := tblusersMixinFields0[8].Descriptor()
+	// tblusers.DefaultID holds the default value on creation for the id field.
+	tblusers.DefaultID = tblusersDescID.Default.(func() string)
+	// tblusers.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tblusers.IDValidator = tblusersDescID.Validators[0].(func(string) error)
 }
 
 const (

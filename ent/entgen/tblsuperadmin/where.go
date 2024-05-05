@@ -79,7 +79,7 @@ func DeletedBy(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldEQ(FieldDeletedBy, v))
 }
 
-// IP applies equality check predicate on the "Ip" field. It's identical to IPEQ.
+// IP applies equality check predicate on the "IP" field. It's identical to IPEQ.
 func IP(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldEQ(FieldIP, v))
 }
@@ -339,77 +339,77 @@ func DeletedByContainsFold(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldContainsFold(FieldDeletedBy, v))
 }
 
-// IPEQ applies the EQ predicate on the "Ip" field.
+// IPEQ applies the EQ predicate on the "IP" field.
 func IPEQ(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldEQ(FieldIP, v))
 }
 
-// IPNEQ applies the NEQ predicate on the "Ip" field.
+// IPNEQ applies the NEQ predicate on the "IP" field.
 func IPNEQ(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldNEQ(FieldIP, v))
 }
 
-// IPIn applies the In predicate on the "Ip" field.
+// IPIn applies the In predicate on the "IP" field.
 func IPIn(vs ...string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldIn(FieldIP, vs...))
 }
 
-// IPNotIn applies the NotIn predicate on the "Ip" field.
+// IPNotIn applies the NotIn predicate on the "IP" field.
 func IPNotIn(vs ...string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldNotIn(FieldIP, vs...))
 }
 
-// IPGT applies the GT predicate on the "Ip" field.
+// IPGT applies the GT predicate on the "IP" field.
 func IPGT(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldGT(FieldIP, v))
 }
 
-// IPGTE applies the GTE predicate on the "Ip" field.
+// IPGTE applies the GTE predicate on the "IP" field.
 func IPGTE(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldGTE(FieldIP, v))
 }
 
-// IPLT applies the LT predicate on the "Ip" field.
+// IPLT applies the LT predicate on the "IP" field.
 func IPLT(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldLT(FieldIP, v))
 }
 
-// IPLTE applies the LTE predicate on the "Ip" field.
+// IPLTE applies the LTE predicate on the "IP" field.
 func IPLTE(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldLTE(FieldIP, v))
 }
 
-// IPContains applies the Contains predicate on the "Ip" field.
+// IPContains applies the Contains predicate on the "IP" field.
 func IPContains(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldContains(FieldIP, v))
 }
 
-// IPHasPrefix applies the HasPrefix predicate on the "Ip" field.
+// IPHasPrefix applies the HasPrefix predicate on the "IP" field.
 func IPHasPrefix(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldHasPrefix(FieldIP, v))
 }
 
-// IPHasSuffix applies the HasSuffix predicate on the "Ip" field.
+// IPHasSuffix applies the HasSuffix predicate on the "IP" field.
 func IPHasSuffix(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldHasSuffix(FieldIP, v))
 }
 
-// IPIsNil applies the IsNil predicate on the "Ip" field.
+// IPIsNil applies the IsNil predicate on the "IP" field.
 func IPIsNil() predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldIsNull(FieldIP))
 }
 
-// IPNotNil applies the NotNil predicate on the "Ip" field.
+// IPNotNil applies the NotNil predicate on the "IP" field.
 func IPNotNil() predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldNotNull(FieldIP))
 }
 
-// IPEqualFold applies the EqualFold predicate on the "Ip" field.
+// IPEqualFold applies the EqualFold predicate on the "IP" field.
 func IPEqualFold(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldEqualFold(FieldIP, v))
 }
 
-// IPContainsFold applies the ContainsFold predicate on the "Ip" field.
+// IPContainsFold applies the ContainsFold predicate on the "IP" field.
 func IPContainsFold(v string) predicate.TblSuperAdmin {
 	return predicate.TblSuperAdmin(sql.FieldContainsFold(FieldIP, v))
 }

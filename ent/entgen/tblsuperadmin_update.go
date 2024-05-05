@@ -88,13 +88,13 @@ func (tsau *TblSuperAdminUpdate) ClearDeletedBy() *TblSuperAdminUpdate {
 	return tsau
 }
 
-// SetIP sets the "Ip" field.
+// SetIP sets the "IP" field.
 func (tsau *TblSuperAdminUpdate) SetIP(s string) *TblSuperAdminUpdate {
 	tsau.mutation.SetIP(s)
 	return tsau
 }
 
-// SetNillableIP sets the "Ip" field if the given value is not nil.
+// SetNillableIP sets the "IP" field if the given value is not nil.
 func (tsau *TblSuperAdminUpdate) SetNillableIP(s *string) *TblSuperAdminUpdate {
 	if s != nil {
 		tsau.SetIP(*s)
@@ -102,7 +102,7 @@ func (tsau *TblSuperAdminUpdate) SetNillableIP(s *string) *TblSuperAdminUpdate {
 	return tsau
 }
 
-// ClearIP clears the value of the "Ip" field.
+// ClearIP clears the value of the "IP" field.
 func (tsau *TblSuperAdminUpdate) ClearIP() *TblSuperAdminUpdate {
 	tsau.mutation.ClearIP()
 	return tsau
@@ -413,13 +413,13 @@ func (tsauo *TblSuperAdminUpdateOne) ClearDeletedBy() *TblSuperAdminUpdateOne {
 	return tsauo
 }
 
-// SetIP sets the "Ip" field.
+// SetIP sets the "IP" field.
 func (tsauo *TblSuperAdminUpdateOne) SetIP(s string) *TblSuperAdminUpdateOne {
 	tsauo.mutation.SetIP(s)
 	return tsauo
 }
 
-// SetNillableIP sets the "Ip" field if the given value is not nil.
+// SetNillableIP sets the "IP" field if the given value is not nil.
 func (tsauo *TblSuperAdminUpdateOne) SetNillableIP(s *string) *TblSuperAdminUpdateOne {
 	if s != nil {
 		tsauo.SetIP(*s)
@@ -427,7 +427,7 @@ func (tsauo *TblSuperAdminUpdateOne) SetNillableIP(s *string) *TblSuperAdminUpda
 	return tsauo
 }
 
-// ClearIP clears the value of the "Ip" field.
+// ClearIP clears the value of the "IP" field.
 func (tsauo *TblSuperAdminUpdateOne) ClearIP() *TblSuperAdminUpdateOne {
 	tsauo.mutation.ClearIP()
 	return tsauo
