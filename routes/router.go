@@ -7,5 +7,7 @@ import (
 )
 
 func InitRoutes(e *echo.Echo, appcongif config.IAppConfig) {
-	_ = e.Group("/api/rr-backend")
+	apiGrp := e.Group("/api/rr-backend")
+
+	initAuthRoutes(apiGrp, appcongif)
 }

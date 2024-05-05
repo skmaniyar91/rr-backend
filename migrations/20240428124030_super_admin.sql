@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS Tbl_SuperAdmin(
     UserName VARCHAR(40) NOT NULL,
     PassWord VARCHAR(40) NOT NULL,
 
+    IP VARCHAR(155) NULL,
+    UserAgent VARCHAR(155),
+
     CreatedAt DATETIME NOT NULL,
     UpdatedAt DATETIME NOT NULL,
     DeletedAt DATETIME NULL,

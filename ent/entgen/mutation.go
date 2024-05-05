@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"rr-backend/ent/entgen/predicate"
+	"rr-backend/ent/entgen/tblsuperadmin"
 	"sync"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -22,8 +24,944 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeUser = "User"
+	TypeTblSuperAdmin = "TblSuperAdmin"
+	TypeUser          = "User"
 )
+
+// TblSuperAdminMutation represents an operation that mutates the TblSuperAdmin nodes in the graph.
+type TblSuperAdminMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	_CreatedBy    *string
+	_UpdatedBy    *string
+	_DeletedBy    *string
+	_Ip           *string
+	_UserAgent    *string
+	_CreatedAt    *time.Time
+	_UpdatedAt    *time.Time
+	_DeletedAt    *time.Time
+	_UserName     *string
+	_PassWord     *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*TblSuperAdmin, error)
+	predicates    []predicate.TblSuperAdmin
+}
+
+var _ ent.Mutation = (*TblSuperAdminMutation)(nil)
+
+// tblsuperadminOption allows management of the mutation configuration using functional options.
+type tblsuperadminOption func(*TblSuperAdminMutation)
+
+// newTblSuperAdminMutation creates new mutation for the TblSuperAdmin entity.
+func newTblSuperAdminMutation(c config, op Op, opts ...tblsuperadminOption) *TblSuperAdminMutation {
+	m := &TblSuperAdminMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTblSuperAdmin,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTblSuperAdminID sets the ID field of the mutation.
+func withTblSuperAdminID(id string) tblsuperadminOption {
+	return func(m *TblSuperAdminMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TblSuperAdmin
+		)
+		m.oldValue = func(ctx context.Context) (*TblSuperAdmin, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TblSuperAdmin.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTblSuperAdmin sets the old TblSuperAdmin of the mutation.
+func withTblSuperAdmin(node *TblSuperAdmin) tblsuperadminOption {
+	return func(m *TblSuperAdminMutation) {
+		m.oldValue = func(context.Context) (*TblSuperAdmin, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TblSuperAdminMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TblSuperAdminMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("entgen: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TblSuperAdmin entities.
+func (m *TblSuperAdminMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TblSuperAdminMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TblSuperAdminMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TblSuperAdmin.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedBy sets the "CreatedBy" field.
+func (m *TblSuperAdminMutation) SetCreatedBy(s string) {
+	m._CreatedBy = &s
+}
+
+// CreatedBy returns the value of the "CreatedBy" field in the mutation.
+func (m *TblSuperAdminMutation) CreatedBy() (r string, exists bool) {
+	v := m._CreatedBy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "CreatedBy" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldCreatedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ClearCreatedBy clears the value of the "CreatedBy" field.
+func (m *TblSuperAdminMutation) ClearCreatedBy() {
+	m._CreatedBy = nil
+	m.clearedFields[tblsuperadmin.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "CreatedBy" field was cleared in this mutation.
+func (m *TblSuperAdminMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[tblsuperadmin.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "CreatedBy" field.
+func (m *TblSuperAdminMutation) ResetCreatedBy() {
+	m._CreatedBy = nil
+	delete(m.clearedFields, tblsuperadmin.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "UpdatedBy" field.
+func (m *TblSuperAdminMutation) SetUpdatedBy(s string) {
+	m._UpdatedBy = &s
+}
+
+// UpdatedBy returns the value of the "UpdatedBy" field in the mutation.
+func (m *TblSuperAdminMutation) UpdatedBy() (r string, exists bool) {
+	v := m._UpdatedBy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "UpdatedBy" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldUpdatedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// ClearUpdatedBy clears the value of the "UpdatedBy" field.
+func (m *TblSuperAdminMutation) ClearUpdatedBy() {
+	m._UpdatedBy = nil
+	m.clearedFields[tblsuperadmin.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "UpdatedBy" field was cleared in this mutation.
+func (m *TblSuperAdminMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[tblsuperadmin.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "UpdatedBy" field.
+func (m *TblSuperAdminMutation) ResetUpdatedBy() {
+	m._UpdatedBy = nil
+	delete(m.clearedFields, tblsuperadmin.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "DeletedBy" field.
+func (m *TblSuperAdminMutation) SetDeletedBy(s string) {
+	m._DeletedBy = &s
+}
+
+// DeletedBy returns the value of the "DeletedBy" field in the mutation.
+func (m *TblSuperAdminMutation) DeletedBy() (r string, exists bool) {
+	v := m._DeletedBy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "DeletedBy" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldDeletedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// ClearDeletedBy clears the value of the "DeletedBy" field.
+func (m *TblSuperAdminMutation) ClearDeletedBy() {
+	m._DeletedBy = nil
+	m.clearedFields[tblsuperadmin.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "DeletedBy" field was cleared in this mutation.
+func (m *TblSuperAdminMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[tblsuperadmin.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "DeletedBy" field.
+func (m *TblSuperAdminMutation) ResetDeletedBy() {
+	m._DeletedBy = nil
+	delete(m.clearedFields, tblsuperadmin.FieldDeletedBy)
+}
+
+// SetIP sets the "Ip" field.
+func (m *TblSuperAdminMutation) SetIP(s string) {
+	m._Ip = &s
+}
+
+// IP returns the value of the "Ip" field in the mutation.
+func (m *TblSuperAdminMutation) IP() (r string, exists bool) {
+	v := m._Ip
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIP returns the old "Ip" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldIP(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIP is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIP requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIP: %w", err)
+	}
+	return oldValue.IP, nil
+}
+
+// ClearIP clears the value of the "Ip" field.
+func (m *TblSuperAdminMutation) ClearIP() {
+	m._Ip = nil
+	m.clearedFields[tblsuperadmin.FieldIP] = struct{}{}
+}
+
+// IPCleared returns if the "Ip" field was cleared in this mutation.
+func (m *TblSuperAdminMutation) IPCleared() bool {
+	_, ok := m.clearedFields[tblsuperadmin.FieldIP]
+	return ok
+}
+
+// ResetIP resets all changes to the "Ip" field.
+func (m *TblSuperAdminMutation) ResetIP() {
+	m._Ip = nil
+	delete(m.clearedFields, tblsuperadmin.FieldIP)
+}
+
+// SetUserAgent sets the "UserAgent" field.
+func (m *TblSuperAdminMutation) SetUserAgent(s string) {
+	m._UserAgent = &s
+}
+
+// UserAgent returns the value of the "UserAgent" field in the mutation.
+func (m *TblSuperAdminMutation) UserAgent() (r string, exists bool) {
+	v := m._UserAgent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserAgent returns the old "UserAgent" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldUserAgent(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserAgent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserAgent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserAgent: %w", err)
+	}
+	return oldValue.UserAgent, nil
+}
+
+// ClearUserAgent clears the value of the "UserAgent" field.
+func (m *TblSuperAdminMutation) ClearUserAgent() {
+	m._UserAgent = nil
+	m.clearedFields[tblsuperadmin.FieldUserAgent] = struct{}{}
+}
+
+// UserAgentCleared returns if the "UserAgent" field was cleared in this mutation.
+func (m *TblSuperAdminMutation) UserAgentCleared() bool {
+	_, ok := m.clearedFields[tblsuperadmin.FieldUserAgent]
+	return ok
+}
+
+// ResetUserAgent resets all changes to the "UserAgent" field.
+func (m *TblSuperAdminMutation) ResetUserAgent() {
+	m._UserAgent = nil
+	delete(m.clearedFields, tblsuperadmin.FieldUserAgent)
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *TblSuperAdminMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *TblSuperAdminMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *TblSuperAdminMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *TblSuperAdminMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *TblSuperAdminMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *TblSuperAdminMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
+}
+
+// SetDeletedAt sets the "DeletedAt" field.
+func (m *TblSuperAdminMutation) SetDeletedAt(t time.Time) {
+	m._DeletedAt = &t
+}
+
+// DeletedAt returns the value of the "DeletedAt" field in the mutation.
+func (m *TblSuperAdminMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m._DeletedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "DeletedAt" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "DeletedAt" field.
+func (m *TblSuperAdminMutation) ClearDeletedAt() {
+	m._DeletedAt = nil
+	m.clearedFields[tblsuperadmin.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "DeletedAt" field was cleared in this mutation.
+func (m *TblSuperAdminMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[tblsuperadmin.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "DeletedAt" field.
+func (m *TblSuperAdminMutation) ResetDeletedAt() {
+	m._DeletedAt = nil
+	delete(m.clearedFields, tblsuperadmin.FieldDeletedAt)
+}
+
+// SetUserName sets the "UserName" field.
+func (m *TblSuperAdminMutation) SetUserName(s string) {
+	m._UserName = &s
+}
+
+// UserName returns the value of the "UserName" field in the mutation.
+func (m *TblSuperAdminMutation) UserName() (r string, exists bool) {
+	v := m._UserName
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserName returns the old "UserName" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldUserName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserName: %w", err)
+	}
+	return oldValue.UserName, nil
+}
+
+// ResetUserName resets all changes to the "UserName" field.
+func (m *TblSuperAdminMutation) ResetUserName() {
+	m._UserName = nil
+}
+
+// SetPassWord sets the "PassWord" field.
+func (m *TblSuperAdminMutation) SetPassWord(s string) {
+	m._PassWord = &s
+}
+
+// PassWord returns the value of the "PassWord" field in the mutation.
+func (m *TblSuperAdminMutation) PassWord() (r string, exists bool) {
+	v := m._PassWord
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPassWord returns the old "PassWord" field's value of the TblSuperAdmin entity.
+// If the TblSuperAdmin object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TblSuperAdminMutation) OldPassWord(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPassWord is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPassWord requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPassWord: %w", err)
+	}
+	return oldValue.PassWord, nil
+}
+
+// ResetPassWord resets all changes to the "PassWord" field.
+func (m *TblSuperAdminMutation) ResetPassWord() {
+	m._PassWord = nil
+}
+
+// Where appends a list predicates to the TblSuperAdminMutation builder.
+func (m *TblSuperAdminMutation) Where(ps ...predicate.TblSuperAdmin) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TblSuperAdminMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TblSuperAdminMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TblSuperAdmin, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TblSuperAdminMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TblSuperAdminMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TblSuperAdmin).
+func (m *TblSuperAdminMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TblSuperAdminMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m._CreatedBy != nil {
+		fields = append(fields, tblsuperadmin.FieldCreatedBy)
+	}
+	if m._UpdatedBy != nil {
+		fields = append(fields, tblsuperadmin.FieldUpdatedBy)
+	}
+	if m._DeletedBy != nil {
+		fields = append(fields, tblsuperadmin.FieldDeletedBy)
+	}
+	if m._Ip != nil {
+		fields = append(fields, tblsuperadmin.FieldIP)
+	}
+	if m._UserAgent != nil {
+		fields = append(fields, tblsuperadmin.FieldUserAgent)
+	}
+	if m._CreatedAt != nil {
+		fields = append(fields, tblsuperadmin.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, tblsuperadmin.FieldUpdatedAt)
+	}
+	if m._DeletedAt != nil {
+		fields = append(fields, tblsuperadmin.FieldDeletedAt)
+	}
+	if m._UserName != nil {
+		fields = append(fields, tblsuperadmin.FieldUserName)
+	}
+	if m._PassWord != nil {
+		fields = append(fields, tblsuperadmin.FieldPassWord)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TblSuperAdminMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tblsuperadmin.FieldCreatedBy:
+		return m.CreatedBy()
+	case tblsuperadmin.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case tblsuperadmin.FieldDeletedBy:
+		return m.DeletedBy()
+	case tblsuperadmin.FieldIP:
+		return m.IP()
+	case tblsuperadmin.FieldUserAgent:
+		return m.UserAgent()
+	case tblsuperadmin.FieldCreatedAt:
+		return m.CreatedAt()
+	case tblsuperadmin.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case tblsuperadmin.FieldDeletedAt:
+		return m.DeletedAt()
+	case tblsuperadmin.FieldUserName:
+		return m.UserName()
+	case tblsuperadmin.FieldPassWord:
+		return m.PassWord()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TblSuperAdminMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tblsuperadmin.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case tblsuperadmin.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case tblsuperadmin.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case tblsuperadmin.FieldIP:
+		return m.OldIP(ctx)
+	case tblsuperadmin.FieldUserAgent:
+		return m.OldUserAgent(ctx)
+	case tblsuperadmin.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case tblsuperadmin.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case tblsuperadmin.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case tblsuperadmin.FieldUserName:
+		return m.OldUserName(ctx)
+	case tblsuperadmin.FieldPassWord:
+		return m.OldPassWord(ctx)
+	}
+	return nil, fmt.Errorf("unknown TblSuperAdmin field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TblSuperAdminMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tblsuperadmin.FieldCreatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case tblsuperadmin.FieldUpdatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case tblsuperadmin.FieldDeletedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case tblsuperadmin.FieldIP:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIP(v)
+		return nil
+	case tblsuperadmin.FieldUserAgent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserAgent(v)
+		return nil
+	case tblsuperadmin.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case tblsuperadmin.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case tblsuperadmin.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case tblsuperadmin.FieldUserName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserName(v)
+		return nil
+	case tblsuperadmin.FieldPassWord:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPassWord(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TblSuperAdmin field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TblSuperAdminMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TblSuperAdminMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TblSuperAdminMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TblSuperAdmin numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TblSuperAdminMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(tblsuperadmin.FieldCreatedBy) {
+		fields = append(fields, tblsuperadmin.FieldCreatedBy)
+	}
+	if m.FieldCleared(tblsuperadmin.FieldUpdatedBy) {
+		fields = append(fields, tblsuperadmin.FieldUpdatedBy)
+	}
+	if m.FieldCleared(tblsuperadmin.FieldDeletedBy) {
+		fields = append(fields, tblsuperadmin.FieldDeletedBy)
+	}
+	if m.FieldCleared(tblsuperadmin.FieldIP) {
+		fields = append(fields, tblsuperadmin.FieldIP)
+	}
+	if m.FieldCleared(tblsuperadmin.FieldUserAgent) {
+		fields = append(fields, tblsuperadmin.FieldUserAgent)
+	}
+	if m.FieldCleared(tblsuperadmin.FieldDeletedAt) {
+		fields = append(fields, tblsuperadmin.FieldDeletedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TblSuperAdminMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TblSuperAdminMutation) ClearField(name string) error {
+	switch name {
+	case tblsuperadmin.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case tblsuperadmin.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case tblsuperadmin.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case tblsuperadmin.FieldIP:
+		m.ClearIP()
+		return nil
+	case tblsuperadmin.FieldUserAgent:
+		m.ClearUserAgent()
+		return nil
+	case tblsuperadmin.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TblSuperAdmin nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TblSuperAdminMutation) ResetField(name string) error {
+	switch name {
+	case tblsuperadmin.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case tblsuperadmin.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case tblsuperadmin.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case tblsuperadmin.FieldIP:
+		m.ResetIP()
+		return nil
+	case tblsuperadmin.FieldUserAgent:
+		m.ResetUserAgent()
+		return nil
+	case tblsuperadmin.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case tblsuperadmin.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case tblsuperadmin.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case tblsuperadmin.FieldUserName:
+		m.ResetUserName()
+		return nil
+	case tblsuperadmin.FieldPassWord:
+		m.ResetPassWord()
+		return nil
+	}
+	return fmt.Errorf("unknown TblSuperAdmin field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TblSuperAdminMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TblSuperAdminMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TblSuperAdminMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TblSuperAdminMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TblSuperAdminMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TblSuperAdminMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TblSuperAdminMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TblSuperAdmin unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TblSuperAdminMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TblSuperAdmin edge %s", name)
+}
 
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {

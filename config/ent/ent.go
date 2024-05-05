@@ -1,18 +1,16 @@
 package ent
 
 import (
-	"log"
 	"rr-backend/ent/entgen"
+	_ "rr-backend/ent/entgen/runtime"
 	constant "rr-backend/lib/const"
 )
 
 func GetENTClient() *entgen.Client {
-	client, err := entgen.Open("mysql", constant.DatabaseURL+"parseTime=True")
+	client, err := entgen.Open("mysql", constant.DatabaseURL)
 	if err != nil {
-		log.Fatalf("failed opening connection to mysql: %v", err)
+		panic(err)
 	}
-
-	defer client.Close()
 
 	return client
 }

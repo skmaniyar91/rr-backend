@@ -3,11 +3,32 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
 
 var (
+	// TblSuperAdminColumns holds the columns for the "Tbl_SuperAdmin" table.
+	TblSuperAdminColumns = []*schema.Column{
+		{Name: "Id_ulid", Type: field.TypeString, Size: 40},
+		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "Ip", Type: field.TypeString, Nullable: true},
+		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
+		{Name: "CreatedAt", Type: field.TypeTime},
+		{Name: "UpdatedAt", Type: field.TypeTime},
+		{Name: "DeletedAt", Type: field.TypeTime, Nullable: true},
+		{Name: "UserName", Type: field.TypeString, Size: 40},
+		{Name: "PassWord", Type: field.TypeString, Size: 40},
+	}
+	// TblSuperAdminTable holds the schema information for the "Tbl_SuperAdmin" table.
+	TblSuperAdminTable = &schema.Table{
+		Name:       "Tbl_SuperAdmin",
+		Columns:    TblSuperAdminColumns,
+		PrimaryKey: []*schema.Column{TblSuperAdminColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -20,9 +41,13 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		TblSuperAdminTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	TblSuperAdminTable.Annotation = &entsql.Annotation{
+		Table: "Tbl_SuperAdmin",
+	}
 }
