@@ -4,9 +4,11 @@ package entgen
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"rr-backend/ent/entgen/predicate"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblusers"
 
 	"entgo.io/ent/dialect/sql"
@@ -21,6 +23,7 @@ type TblUSersQuery struct {
 	order      []tblusers.OrderOption
 	inters     []Interceptor
 	predicates []predicate.TblUSers
+	withOwner  *TblGarageOwnerQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (tuq *TblUSersQuery) Unique(unique bool) *TblUSersQuery {
 func (tuq *TblUSersQuery) Order(o ...tblusers.OrderOption) *TblUSersQuery {
 	tuq.order = append(tuq.order, o...)
 	return tuq
+}
+
+// QueryOwner chains the current query on the "Owner" edge.
+func (tuq *TblUSersQuery) QueryOwner() *TblGarageOwnerQuery {
+	query := (&TblGarageOwnerClient{config: tuq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tuq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tuq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblusers.Table, tblusers.FieldID, selector),
+			sqlgraph.To(tblgarageowner.Table, tblgarageowner.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, tblusers.OwnerTable, tblusers.OwnerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tuq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first TblUSers entity from the query.
@@ -249,10 +274,22 @@ func (tuq *TblUSersQuery) Clone() *TblUSersQuery {
 		order:      append([]tblusers.OrderOption{}, tuq.order...),
 		inters:     append([]Interceptor{}, tuq.inters...),
 		predicates: append([]predicate.TblUSers{}, tuq.predicates...),
+		withOwner:  tuq.withOwner.Clone(),
 		// clone intermediate query.
 		sql:  tuq.sql.Clone(),
 		path: tuq.path,
 	}
+}
+
+// WithOwner tells the query-builder to eager-load the nodes that are connected to
+// the "Owner" edge. The optional arguments are used to configure the query builder of the edge.
+func (tuq *TblUSersQuery) WithOwner(opts ...func(*TblGarageOwnerQuery)) *TblUSersQuery {
+	query := (&TblGarageOwnerClient{config: tuq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	tuq.withOwner = query
+	return tuq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (tuq *TblUSersQuery) prepareQuery(ctx context.Context) error {
 
 func (tuq *TblUSersQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*TblUSers, error) {
 	var (
-		nodes = []*TblUSers{}
-		_spec = tuq.querySpec()
+		nodes       = []*TblUSers{}
+		_spec       = tuq.querySpec()
+		loadedTypes = [1]bool{
+			tuq.withOwner != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*TblUSers).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (tuq *TblUSersQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tb
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &TblUSers{config: tuq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,44 @@ func (tuq *TblUSersQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tb
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := tuq.withOwner; query != nil {
+		if err := tuq.loadOwner(ctx, query, nodes, nil,
+			func(n *TblUSers, e *TblGarageOwner) { n.Edges.Owner = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (tuq *TblUSersQuery) loadOwner(ctx context.Context, query *TblGarageOwnerQuery, nodes []*TblUSers, init func(*TblUSers), assign func(*TblUSers, *TblGarageOwner)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*TblUSers)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(tblgarageowner.FieldUserIdUlid)
+	}
+	query.Where(predicate.TblGarageOwner(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(tblusers.OwnerColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserIdUlid
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "UserId_ulid" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "UserId_ulid" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (tuq *TblUSersQuery) sqlCount(ctx context.Context) (int, error) {

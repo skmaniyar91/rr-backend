@@ -9,6 +9,130 @@ import (
 )
 
 var (
+	// TblAddressColumns holds the columns for the "Tbl_Address" table.
+	TblAddressColumns = []*schema.Column{
+		{Name: "Id_ulid", Type: field.TypeString, Size: 40},
+		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "IP", Type: field.TypeString, Nullable: true},
+		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
+		{Name: "CreatedAt", Type: field.TypeTime},
+		{Name: "UpdatedAt", Type: field.TypeTime},
+		{Name: "DeletedAt", Type: field.TypeTime, Nullable: true},
+		{Name: "Line1", Type: field.TypeString, Size: 50},
+		{Name: "Line2", Type: field.TypeString, Nullable: true, Size: 50},
+		{Name: "Line3", Type: field.TypeString, Nullable: true, Size: 50},
+		{Name: "City", Type: field.TypeString, Size: 50},
+		{Name: "District", Type: field.TypeString, Nullable: true, Size: 50},
+		{Name: "SubDistrict", Type: field.TypeString, Nullable: true, Size: 50},
+		{Name: "State", Type: field.TypeString, Size: 50},
+		{Name: "Country", Type: field.TypeString, Size: 50},
+		{Name: "PostalCode", Type: field.TypeString, Nullable: true, Size: 50},
+	}
+	// TblAddressTable holds the schema information for the "Tbl_Address" table.
+	TblAddressTable = &schema.Table{
+		Name:       "Tbl_Address",
+		Columns:    TblAddressColumns,
+		PrimaryKey: []*schema.Column{TblAddressColumns[0]},
+	}
+	// TblDocumentColumns holds the columns for the "Tbl_Document" table.
+	TblDocumentColumns = []*schema.Column{
+		{Name: "Id_ulid", Type: field.TypeString, Size: 40},
+		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "IP", Type: field.TypeString, Nullable: true},
+		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
+		{Name: "CreatedAt", Type: field.TypeTime},
+		{Name: "UpdatedAt", Type: field.TypeTime},
+		{Name: "DeletedAt", Type: field.TypeTime, Nullable: true},
+		{Name: "Name", Type: field.TypeString, Size: 50},
+		{Name: "RelativePath", Type: field.TypeString, Size: 500},
+		{Name: "URL", Type: field.TypeString, Size: 1000},
+		{Name: "SizeInBytes", Type: field.TypeFloat64},
+	}
+	// TblDocumentTable holds the schema information for the "Tbl_Document" table.
+	TblDocumentTable = &schema.Table{
+		Name:       "Tbl_Document",
+		Columns:    TblDocumentColumns,
+		PrimaryKey: []*schema.Column{TblDocumentColumns[0]},
+	}
+	// TblEnumColumns holds the columns for the "Tbl_Enum" table.
+	TblEnumColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "IP", Type: field.TypeString, Nullable: true},
+		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
+		{Name: "CreatedAt", Type: field.TypeTime},
+		{Name: "UpdatedAt", Type: field.TypeTime},
+		{Name: "DeletedAt", Type: field.TypeTime, Nullable: true},
+		{Name: "Code", Type: field.TypeString, Size: 100},
+		{Name: "CodeType", Type: field.TypeString, Size: 100},
+		{Name: "DisplayText", Type: field.TypeString, Size: 100},
+	}
+	// TblEnumTable holds the schema information for the "Tbl_Enum" table.
+	TblEnumTable = &schema.Table{
+		Name:       "Tbl_Enum",
+		Columns:    TblEnumColumns,
+		PrimaryKey: []*schema.Column{TblEnumColumns[0]},
+	}
+	// TblGarageOwnerColumns holds the columns for the "Tbl_GarageOwner" table.
+	TblGarageOwnerColumns = []*schema.Column{
+		{Name: "Id_ulid", Type: field.TypeString, Size: 40},
+		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "IP", Type: field.TypeString, Nullable: true},
+		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
+		{Name: "CreatedAt", Type: field.TypeTime},
+		{Name: "UpdatedAt", Type: field.TypeTime},
+		{Name: "DeletedAt", Type: field.TypeTime, Nullable: true},
+		{Name: "FirstName", Type: field.TypeString, Size: 100},
+		{Name: "MiddleName", Type: field.TypeString, Nullable: true, Size: 100},
+		{Name: "LastName", Type: field.TypeString, Size: 100},
+		{Name: "ContactNumber", Type: field.TypeString, Size: 50},
+		{Name: "Email", Type: field.TypeString, Nullable: true, Size: 100},
+		{Name: "Age", Type: field.TypeInt, Nullable: true},
+		{Name: "Address", Type: field.TypeString, Unique: true, Size: 40},
+		{Name: "Photo", Type: field.TypeString, Unique: true, Nullable: true, Size: 40},
+		{Name: "Initial", Type: field.TypeInt, Unique: true, Nullable: true},
+		{Name: "UserId_ulid", Type: field.TypeString, Unique: true, Nullable: true, Size: 40},
+	}
+	// TblGarageOwnerTable holds the schema information for the "Tbl_GarageOwner" table.
+	TblGarageOwnerTable = &schema.Table{
+		Name:       "Tbl_GarageOwner",
+		Columns:    TblGarageOwnerColumns,
+		PrimaryKey: []*schema.Column{TblGarageOwnerColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "Tbl_GarageOwner_Tbl_Address_OwnerAddress",
+				Columns:    []*schema.Column{TblGarageOwnerColumns[15]},
+				RefColumns: []*schema.Column{TblAddressColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "Tbl_GarageOwner_Tbl_Document_Photo",
+				Columns:    []*schema.Column{TblGarageOwnerColumns[16]},
+				RefColumns: []*schema.Column{TblDocumentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "Tbl_GarageOwner_Tbl_Enum_InitialEnum",
+				Columns:    []*schema.Column{TblGarageOwnerColumns[17]},
+				RefColumns: []*schema.Column{TblEnumColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "Tbl_GarageOwner_Tbl_Users_Owner",
+				Columns:    []*schema.Column{TblGarageOwnerColumns[18]},
+				RefColumns: []*schema.Column{TblUsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TblSuperAdminColumns holds the columns for the "Tbl_SuperAdmin" table.
 	TblSuperAdminColumns = []*schema.Column{
 		{Name: "Id_ulid", Type: field.TypeString, Size: 40},
@@ -52,12 +176,32 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		TblAddressTable,
+		TblDocumentTable,
+		TblEnumTable,
+		TblGarageOwnerTable,
 		TblSuperAdminTable,
 		TblUsersTable,
 	}
 )
 
 func init() {
+	TblAddressTable.Annotation = &entsql.Annotation{
+		Table: "Tbl_Address",
+	}
+	TblDocumentTable.Annotation = &entsql.Annotation{
+		Table: "Tbl_Document",
+	}
+	TblEnumTable.Annotation = &entsql.Annotation{
+		Table: "Tbl_Enum",
+	}
+	TblGarageOwnerTable.ForeignKeys[0].RefTable = TblAddressTable
+	TblGarageOwnerTable.ForeignKeys[1].RefTable = TblDocumentTable
+	TblGarageOwnerTable.ForeignKeys[2].RefTable = TblEnumTable
+	TblGarageOwnerTable.ForeignKeys[3].RefTable = TblUsersTable
+	TblGarageOwnerTable.Annotation = &entsql.Annotation{
+		Table: "Tbl_GarageOwner",
+	}
 	TblSuperAdminTable.Annotation = &entsql.Annotation{
 		Table: "Tbl_SuperAdmin",
 	}

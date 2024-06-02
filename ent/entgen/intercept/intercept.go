@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"rr-backend/ent/entgen"
 	"rr-backend/ent/entgen/predicate"
+	"rr-backend/ent/entgen/tbladdress"
+	"rr-backend/ent/entgen/tbldocument"
+	"rr-backend/ent/entgen/tblenum"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblsuperadmin"
 	"rr-backend/ent/entgen/tblusers"
 
@@ -69,6 +73,114 @@ func (f TraverseFunc) Traverse(ctx context.Context, q entgen.Query) error {
 	return f(ctx, query)
 }
 
+// The TblAddressFunc type is an adapter to allow the use of ordinary function as a Querier.
+type TblAddressFunc func(context.Context, *entgen.TblAddressQuery) (entgen.Value, error)
+
+// Query calls f(ctx, q).
+func (f TblAddressFunc) Query(ctx context.Context, q entgen.Query) (entgen.Value, error) {
+	if q, ok := q.(*entgen.TblAddressQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *entgen.TblAddressQuery", q)
+}
+
+// The TraverseTblAddress type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseTblAddress func(context.Context, *entgen.TblAddressQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseTblAddress) Intercept(next entgen.Querier) entgen.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseTblAddress) Traverse(ctx context.Context, q entgen.Query) error {
+	if q, ok := q.(*entgen.TblAddressQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *entgen.TblAddressQuery", q)
+}
+
+// The TblDocumentFunc type is an adapter to allow the use of ordinary function as a Querier.
+type TblDocumentFunc func(context.Context, *entgen.TblDocumentQuery) (entgen.Value, error)
+
+// Query calls f(ctx, q).
+func (f TblDocumentFunc) Query(ctx context.Context, q entgen.Query) (entgen.Value, error) {
+	if q, ok := q.(*entgen.TblDocumentQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *entgen.TblDocumentQuery", q)
+}
+
+// The TraverseTblDocument type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseTblDocument func(context.Context, *entgen.TblDocumentQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseTblDocument) Intercept(next entgen.Querier) entgen.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseTblDocument) Traverse(ctx context.Context, q entgen.Query) error {
+	if q, ok := q.(*entgen.TblDocumentQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *entgen.TblDocumentQuery", q)
+}
+
+// The TblEnumFunc type is an adapter to allow the use of ordinary function as a Querier.
+type TblEnumFunc func(context.Context, *entgen.TblEnumQuery) (entgen.Value, error)
+
+// Query calls f(ctx, q).
+func (f TblEnumFunc) Query(ctx context.Context, q entgen.Query) (entgen.Value, error) {
+	if q, ok := q.(*entgen.TblEnumQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *entgen.TblEnumQuery", q)
+}
+
+// The TraverseTblEnum type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseTblEnum func(context.Context, *entgen.TblEnumQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseTblEnum) Intercept(next entgen.Querier) entgen.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseTblEnum) Traverse(ctx context.Context, q entgen.Query) error {
+	if q, ok := q.(*entgen.TblEnumQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *entgen.TblEnumQuery", q)
+}
+
+// The TblGarageOwnerFunc type is an adapter to allow the use of ordinary function as a Querier.
+type TblGarageOwnerFunc func(context.Context, *entgen.TblGarageOwnerQuery) (entgen.Value, error)
+
+// Query calls f(ctx, q).
+func (f TblGarageOwnerFunc) Query(ctx context.Context, q entgen.Query) (entgen.Value, error) {
+	if q, ok := q.(*entgen.TblGarageOwnerQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *entgen.TblGarageOwnerQuery", q)
+}
+
+// The TraverseTblGarageOwner type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseTblGarageOwner func(context.Context, *entgen.TblGarageOwnerQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseTblGarageOwner) Intercept(next entgen.Querier) entgen.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseTblGarageOwner) Traverse(ctx context.Context, q entgen.Query) error {
+	if q, ok := q.(*entgen.TblGarageOwnerQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *entgen.TblGarageOwnerQuery", q)
+}
+
 // The TblSuperAdminFunc type is an adapter to allow the use of ordinary function as a Querier.
 type TblSuperAdminFunc func(context.Context, *entgen.TblSuperAdminQuery) (entgen.Value, error)
 
@@ -126,6 +238,14 @@ func (f TraverseTblUSers) Traverse(ctx context.Context, q entgen.Query) error {
 // NewQuery returns the generic Query interface for the given typed query.
 func NewQuery(q entgen.Query) (Query, error) {
 	switch q := q.(type) {
+	case *entgen.TblAddressQuery:
+		return &query[*entgen.TblAddressQuery, predicate.TblAddress, tbladdress.OrderOption]{typ: entgen.TypeTblAddress, tq: q}, nil
+	case *entgen.TblDocumentQuery:
+		return &query[*entgen.TblDocumentQuery, predicate.TblDocument, tbldocument.OrderOption]{typ: entgen.TypeTblDocument, tq: q}, nil
+	case *entgen.TblEnumQuery:
+		return &query[*entgen.TblEnumQuery, predicate.TblEnum, tblenum.OrderOption]{typ: entgen.TypeTblEnum, tq: q}, nil
+	case *entgen.TblGarageOwnerQuery:
+		return &query[*entgen.TblGarageOwnerQuery, predicate.TblGarageOwner, tblgarageowner.OrderOption]{typ: entgen.TypeTblGarageOwner, tq: q}, nil
 	case *entgen.TblSuperAdminQuery:
 		return &query[*entgen.TblSuperAdminQuery, predicate.TblSuperAdmin, tblsuperadmin.OrderOption]{typ: entgen.TypeTblSuperAdmin, tq: q}, nil
 	case *entgen.TblUSersQuery:

@@ -4,8 +4,8 @@ package entgen
 
 import (
 	"fmt"
+	"rr-backend/ent/entgen/tblenum"
 	"rr-backend/ent/entgen/tblgarageowner"
-	"rr-backend/ent/entgen/tblusers"
 	"strings"
 	"time"
 
@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// TblUSers is the model entity for the TblUSers schema.
-type TblUSers struct {
+// TblEnum is the model entity for the TblEnum schema.
+type TblEnum struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
 	// CreatedBy holds the value of the "CreatedBy" field.
 	CreatedBy *string `json:"CreatedBy,omitempty"`
 	// UpdatedBy holds the value of the "UpdatedBy" field.
@@ -34,46 +34,48 @@ type TblUSers struct {
 	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
 	// DeletedAt holds the value of the "DeletedAt" field.
 	DeletedAt *time.Time `json:"DeletedAt,omitempty"`
-	// UserName holds the value of the "UserName" field.
-	UserName string `json:"UserName,omitempty"`
-	// Password holds the value of the "Password" field.
-	Password string `json:"Password,omitempty"`
-	// Email holds the value of the "Email" field.
-	Email *string `json:"Email,omitempty"`
+	// Code holds the value of the "Code" field.
+	Code string `json:"Code,omitempty"`
+	// CodeType holds the value of the "CodeType" field.
+	CodeType string `json:"CodeType,omitempty"`
+	// DisplayText holds the value of the "DisplayText" field.
+	DisplayText string `json:"DisplayText,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TblUSersQuery when eager-loading is set.
-	Edges        TblUSersEdges `json:"edges"`
+	// The values are being populated by the TblEnumQuery when eager-loading is set.
+	Edges        TblEnumEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// TblUSersEdges holds the relations/edges for other nodes in the graph.
-type TblUSersEdges struct {
-	// Owner holds the value of the Owner edge.
-	Owner *TblGarageOwner `json:"Owner,omitempty"`
+// TblEnumEdges holds the relations/edges for other nodes in the graph.
+type TblEnumEdges struct {
+	// InitialEnum holds the value of the InitialEnum edge.
+	InitialEnum *TblGarageOwner `json:"InitialEnum,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// OwnerOrErr returns the Owner value or an error if the edge
+// InitialEnumOrErr returns the InitialEnum value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e TblUSersEdges) OwnerOrErr() (*TblGarageOwner, error) {
-	if e.Owner != nil {
-		return e.Owner, nil
+func (e TblEnumEdges) InitialEnumOrErr() (*TblGarageOwner, error) {
+	if e.InitialEnum != nil {
+		return e.InitialEnum, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: tblgarageowner.Label}
 	}
-	return nil, &NotLoadedError{edge: "Owner"}
+	return nil, &NotLoadedError{edge: "InitialEnum"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*TblUSers) scanValues(columns []string) ([]any, error) {
+func (*TblEnum) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case tblusers.FieldID, tblusers.FieldCreatedBy, tblusers.FieldUpdatedBy, tblusers.FieldDeletedBy, tblusers.FieldIP, tblusers.FieldUserAgent, tblusers.FieldUserName, tblusers.FieldPassword, tblusers.FieldEmail:
+		case tblenum.FieldID:
+			values[i] = new(sql.NullInt64)
+		case tblenum.FieldCreatedBy, tblenum.FieldUpdatedBy, tblenum.FieldDeletedBy, tblenum.FieldIP, tblenum.FieldUserAgent, tblenum.FieldCode, tblenum.FieldCodeType, tblenum.FieldDisplayText:
 			values[i] = new(sql.NullString)
-		case tblusers.FieldCreatedAt, tblusers.FieldUpdatedAt, tblusers.FieldDeletedAt:
+		case tblenum.FieldCreatedAt, tblenum.FieldUpdatedAt, tblenum.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -83,182 +85,179 @@ func (*TblUSers) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the TblUSers fields.
-func (tu *TblUSers) assignValues(columns []string, values []any) error {
+// to the TblEnum fields.
+func (te *TblEnum) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case tblusers.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				tu.ID = value.String
+		case tblenum.FieldID:
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-		case tblusers.FieldCreatedBy:
+			te.ID = int(value.Int64)
+		case tblenum.FieldCreatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedBy", values[i])
 			} else if value.Valid {
-				tu.CreatedBy = new(string)
-				*tu.CreatedBy = value.String
+				te.CreatedBy = new(string)
+				*te.CreatedBy = value.String
 			}
-		case tblusers.FieldUpdatedBy:
+		case tblenum.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UpdatedBy", values[i])
 			} else if value.Valid {
-				tu.UpdatedBy = new(string)
-				*tu.UpdatedBy = value.String
+				te.UpdatedBy = new(string)
+				*te.UpdatedBy = value.String
 			}
-		case tblusers.FieldDeletedBy:
+		case tblenum.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field DeletedBy", values[i])
 			} else if value.Valid {
-				tu.DeletedBy = new(string)
-				*tu.DeletedBy = value.String
+				te.DeletedBy = new(string)
+				*te.DeletedBy = value.String
 			}
-		case tblusers.FieldIP:
+		case tblenum.FieldIP:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field IP", values[i])
 			} else if value.Valid {
-				tu.IP = new(string)
-				*tu.IP = value.String
+				te.IP = new(string)
+				*te.IP = value.String
 			}
-		case tblusers.FieldUserAgent:
+		case tblenum.FieldUserAgent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UserAgent", values[i])
 			} else if value.Valid {
-				tu.UserAgent = new(string)
-				*tu.UserAgent = value.String
+				te.UserAgent = new(string)
+				*te.UserAgent = value.String
 			}
-		case tblusers.FieldCreatedAt:
+		case tblenum.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
 			} else if value.Valid {
-				tu.CreatedAt = value.Time
+				te.CreatedAt = value.Time
 			}
-		case tblusers.FieldUpdatedAt:
+		case tblenum.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
 			} else if value.Valid {
-				tu.UpdatedAt = value.Time
+				te.UpdatedAt = value.Time
 			}
-		case tblusers.FieldDeletedAt:
+		case tblenum.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field DeletedAt", values[i])
 			} else if value.Valid {
-				tu.DeletedAt = new(time.Time)
-				*tu.DeletedAt = value.Time
+				te.DeletedAt = new(time.Time)
+				*te.DeletedAt = value.Time
 			}
-		case tblusers.FieldUserName:
+		case tblenum.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field UserName", values[i])
+				return fmt.Errorf("unexpected type %T for field Code", values[i])
 			} else if value.Valid {
-				tu.UserName = value.String
+				te.Code = value.String
 			}
-		case tblusers.FieldPassword:
+		case tblenum.FieldCodeType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field Password", values[i])
+				return fmt.Errorf("unexpected type %T for field CodeType", values[i])
 			} else if value.Valid {
-				tu.Password = value.String
+				te.CodeType = value.String
 			}
-		case tblusers.FieldEmail:
+		case tblenum.FieldDisplayText:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field Email", values[i])
+				return fmt.Errorf("unexpected type %T for field DisplayText", values[i])
 			} else if value.Valid {
-				tu.Email = new(string)
-				*tu.Email = value.String
+				te.DisplayText = value.String
 			}
 		default:
-			tu.selectValues.Set(columns[i], values[i])
+			te.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the TblUSers.
+// Value returns the ent.Value that was dynamically selected and assigned to the TblEnum.
 // This includes values selected through modifiers, order, etc.
-func (tu *TblUSers) Value(name string) (ent.Value, error) {
-	return tu.selectValues.Get(name)
+func (te *TblEnum) Value(name string) (ent.Value, error) {
+	return te.selectValues.Get(name)
 }
 
-// QueryOwner queries the "Owner" edge of the TblUSers entity.
-func (tu *TblUSers) QueryOwner() *TblGarageOwnerQuery {
-	return NewTblUSersClient(tu.config).QueryOwner(tu)
+// QueryInitialEnum queries the "InitialEnum" edge of the TblEnum entity.
+func (te *TblEnum) QueryInitialEnum() *TblGarageOwnerQuery {
+	return NewTblEnumClient(te.config).QueryInitialEnum(te)
 }
 
-// Update returns a builder for updating this TblUSers.
-// Note that you need to call TblUSers.Unwrap() before calling this method if this TblUSers
+// Update returns a builder for updating this TblEnum.
+// Note that you need to call TblEnum.Unwrap() before calling this method if this TblEnum
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (tu *TblUSers) Update() *TblUSersUpdateOne {
-	return NewTblUSersClient(tu.config).UpdateOne(tu)
+func (te *TblEnum) Update() *TblEnumUpdateOne {
+	return NewTblEnumClient(te.config).UpdateOne(te)
 }
 
-// Unwrap unwraps the TblUSers entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the TblEnum entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (tu *TblUSers) Unwrap() *TblUSers {
-	_tx, ok := tu.config.driver.(*txDriver)
+func (te *TblEnum) Unwrap() *TblEnum {
+	_tx, ok := te.config.driver.(*txDriver)
 	if !ok {
-		panic("entgen: TblUSers is not a transactional entity")
+		panic("entgen: TblEnum is not a transactional entity")
 	}
-	tu.config.driver = _tx.drv
-	return tu
+	te.config.driver = _tx.drv
+	return te
 }
 
 // String implements the fmt.Stringer.
-func (tu *TblUSers) String() string {
+func (te *TblEnum) String() string {
 	var builder strings.Builder
-	builder.WriteString("TblUSers(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", tu.ID))
-	if v := tu.CreatedBy; v != nil {
+	builder.WriteString("TblEnum(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", te.ID))
+	if v := te.CreatedBy; v != nil {
 		builder.WriteString("CreatedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.UpdatedBy; v != nil {
+	if v := te.UpdatedBy; v != nil {
 		builder.WriteString("UpdatedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.DeletedBy; v != nil {
+	if v := te.DeletedBy; v != nil {
 		builder.WriteString("DeletedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.IP; v != nil {
+	if v := te.IP; v != nil {
 		builder.WriteString("IP=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.UserAgent; v != nil {
+	if v := te.UserAgent; v != nil {
 		builder.WriteString("UserAgent=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("CreatedAt=")
-	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(te.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("UpdatedAt=")
-	builder.WriteString(tu.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(te.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := tu.DeletedAt; v != nil {
+	if v := te.DeletedAt; v != nil {
 		builder.WriteString("DeletedAt=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("UserName=")
-	builder.WriteString(tu.UserName)
+	builder.WriteString("Code=")
+	builder.WriteString(te.Code)
 	builder.WriteString(", ")
-	builder.WriteString("Password=")
-	builder.WriteString(tu.Password)
+	builder.WriteString("CodeType=")
+	builder.WriteString(te.CodeType)
 	builder.WriteString(", ")
-	if v := tu.Email; v != nil {
-		builder.WriteString("Email=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("DisplayText=")
+	builder.WriteString(te.DisplayText)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// TblUSersSlice is a parsable slice of TblUSers.
-type TblUSersSlice []*TblUSers
+// TblEnums is a parsable slice of TblEnum.
+type TblEnums []*TblEnum

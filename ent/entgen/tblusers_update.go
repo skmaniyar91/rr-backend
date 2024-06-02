@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"rr-backend/ent/entgen/predicate"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblusers"
 	"time"
 
@@ -216,9 +217,34 @@ func (tuu *TblUSersUpdate) ClearEmail() *TblUSersUpdate {
 	return tuu
 }
 
+// SetOwnerID sets the "Owner" edge to the TblGarageOwner entity by ID.
+func (tuu *TblUSersUpdate) SetOwnerID(id string) *TblUSersUpdate {
+	tuu.mutation.SetOwnerID(id)
+	return tuu
+}
+
+// SetNillableOwnerID sets the "Owner" edge to the TblGarageOwner entity by ID if the given value is not nil.
+func (tuu *TblUSersUpdate) SetNillableOwnerID(id *string) *TblUSersUpdate {
+	if id != nil {
+		tuu = tuu.SetOwnerID(*id)
+	}
+	return tuu
+}
+
+// SetOwner sets the "Owner" edge to the TblGarageOwner entity.
+func (tuu *TblUSersUpdate) SetOwner(t *TblGarageOwner) *TblUSersUpdate {
+	return tuu.SetOwnerID(t.ID)
+}
+
 // Mutation returns the TblUSersMutation object of the builder.
 func (tuu *TblUSersUpdate) Mutation() *TblUSersMutation {
 	return tuu.mutation
+}
+
+// ClearOwner clears the "Owner" edge to the TblGarageOwner entity.
+func (tuu *TblUSersUpdate) ClearOwner() *TblUSersUpdate {
+	tuu.mutation.ClearOwner()
+	return tuu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -363,6 +389,35 @@ func (tuu *TblUSersUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if tuu.mutation.EmailCleared() {
 		_spec.ClearField(tblusers.FieldEmail, field.TypeString)
+	}
+	if tuu.mutation.OwnerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   tblusers.OwnerTable,
+			Columns: []string{tblusers.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tblgarageowner.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuu.mutation.OwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   tblusers.OwnerTable,
+			Columns: []string{tblusers.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tblgarageowner.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tuu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -572,9 +627,34 @@ func (tuuo *TblUSersUpdateOne) ClearEmail() *TblUSersUpdateOne {
 	return tuuo
 }
 
+// SetOwnerID sets the "Owner" edge to the TblGarageOwner entity by ID.
+func (tuuo *TblUSersUpdateOne) SetOwnerID(id string) *TblUSersUpdateOne {
+	tuuo.mutation.SetOwnerID(id)
+	return tuuo
+}
+
+// SetNillableOwnerID sets the "Owner" edge to the TblGarageOwner entity by ID if the given value is not nil.
+func (tuuo *TblUSersUpdateOne) SetNillableOwnerID(id *string) *TblUSersUpdateOne {
+	if id != nil {
+		tuuo = tuuo.SetOwnerID(*id)
+	}
+	return tuuo
+}
+
+// SetOwner sets the "Owner" edge to the TblGarageOwner entity.
+func (tuuo *TblUSersUpdateOne) SetOwner(t *TblGarageOwner) *TblUSersUpdateOne {
+	return tuuo.SetOwnerID(t.ID)
+}
+
 // Mutation returns the TblUSersMutation object of the builder.
 func (tuuo *TblUSersUpdateOne) Mutation() *TblUSersMutation {
 	return tuuo.mutation
+}
+
+// ClearOwner clears the "Owner" edge to the TblGarageOwner entity.
+func (tuuo *TblUSersUpdateOne) ClearOwner() *TblUSersUpdateOne {
+	tuuo.mutation.ClearOwner()
+	return tuuo
 }
 
 // Where appends a list predicates to the TblUSersUpdate builder.
@@ -749,6 +829,35 @@ func (tuuo *TblUSersUpdateOne) sqlSave(ctx context.Context) (_node *TblUSers, er
 	}
 	if tuuo.mutation.EmailCleared() {
 		_spec.ClearField(tblusers.FieldEmail, field.TypeString)
+	}
+	if tuuo.mutation.OwnerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   tblusers.OwnerTable,
+			Columns: []string{tblusers.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tblgarageowner.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuuo.mutation.OwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   tblusers.OwnerTable,
+			Columns: []string{tblusers.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tblgarageowner.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TblUSers{config: tuuo.config}
 	_spec.Assign = _node.assignValues

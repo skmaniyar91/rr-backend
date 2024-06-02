@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblusers"
 	"time"
 
@@ -170,6 +171,25 @@ func (tuc *TblUSersCreate) SetNillableID(s *string) *TblUSersCreate {
 		tuc.SetID(*s)
 	}
 	return tuc
+}
+
+// SetOwnerID sets the "Owner" edge to the TblGarageOwner entity by ID.
+func (tuc *TblUSersCreate) SetOwnerID(id string) *TblUSersCreate {
+	tuc.mutation.SetOwnerID(id)
+	return tuc
+}
+
+// SetNillableOwnerID sets the "Owner" edge to the TblGarageOwner entity by ID if the given value is not nil.
+func (tuc *TblUSersCreate) SetNillableOwnerID(id *string) *TblUSersCreate {
+	if id != nil {
+		tuc = tuc.SetOwnerID(*id)
+	}
+	return tuc
+}
+
+// SetOwner sets the "Owner" edge to the TblGarageOwner entity.
+func (tuc *TblUSersCreate) SetOwner(t *TblGarageOwner) *TblUSersCreate {
+	return tuc.SetOwnerID(t.ID)
 }
 
 // Mutation returns the TblUSersMutation object of the builder.
@@ -360,6 +380,22 @@ func (tuc *TblUSersCreate) createSpec() (*TblUSers, *sqlgraph.CreateSpec) {
 	if value, ok := tuc.mutation.Email(); ok {
 		_spec.SetField(tblusers.FieldEmail, field.TypeString, value)
 		_node.Email = &value
+	}
+	if nodes := tuc.mutation.OwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   tblusers.OwnerTable,
+			Columns: []string{tblusers.OwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tblgarageowner.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

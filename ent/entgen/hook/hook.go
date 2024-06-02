@@ -8,6 +8,54 @@ import (
 	"rr-backend/ent/entgen"
 )
 
+// The TblAddressFunc type is an adapter to allow the use of ordinary
+// function as TblAddress mutator.
+type TblAddressFunc func(context.Context, *entgen.TblAddressMutation) (entgen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TblAddressFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
+	if mv, ok := m.(*entgen.TblAddressMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblAddressMutation", m)
+}
+
+// The TblDocumentFunc type is an adapter to allow the use of ordinary
+// function as TblDocument mutator.
+type TblDocumentFunc func(context.Context, *entgen.TblDocumentMutation) (entgen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TblDocumentFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
+	if mv, ok := m.(*entgen.TblDocumentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblDocumentMutation", m)
+}
+
+// The TblEnumFunc type is an adapter to allow the use of ordinary
+// function as TblEnum mutator.
+type TblEnumFunc func(context.Context, *entgen.TblEnumMutation) (entgen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TblEnumFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
+	if mv, ok := m.(*entgen.TblEnumMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblEnumMutation", m)
+}
+
+// The TblGarageOwnerFunc type is an adapter to allow the use of ordinary
+// function as TblGarageOwner mutator.
+type TblGarageOwnerFunc func(context.Context, *entgen.TblGarageOwnerMutation) (entgen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TblGarageOwnerFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
+	if mv, ok := m.(*entgen.TblGarageOwnerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblGarageOwnerMutation", m)
+}
+
 // The TblSuperAdminFunc type is an adapter to allow the use of ordinary
 // function as TblSuperAdmin mutator.
 type TblSuperAdminFunc func(context.Context, *entgen.TblSuperAdminMutation) (entgen.Value, error)
