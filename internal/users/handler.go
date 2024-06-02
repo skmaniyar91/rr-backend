@@ -5,7 +5,7 @@ import (
 	"rr-backend/config"
 	"rr-backend/lib"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type IUserHandler interface {

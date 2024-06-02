@@ -5,7 +5,7 @@ import (
 	"rr-backend/config/env"
 	"rr-backend/routes"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func Start() {

@@ -5,7 +5,7 @@ import (
 	"rr-backend/internal/users"
 	constant "rr-backend/lib/const"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func initiUsersRoutes(apiGrp echo.Group, config config.IAppConfig) {

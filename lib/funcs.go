@@ -5,7 +5,7 @@ import (
 	"rr-backend/ent/entgen"
 	"rr-backend/lib/restmdl"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func GetRequestMetaData(c echo.Context) restmdl.RequestMetaData {
