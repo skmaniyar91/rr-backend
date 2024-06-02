@@ -4,7 +4,7 @@ import (
 	"rr-backend/auth"
 	"rr-backend/config"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func initAuthRoutes(apiGrp *echo.Group, config config.IAppConfig) {

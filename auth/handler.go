@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"rr-backend/config"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type IAuthHandler interface {
