@@ -7,6 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"rr-backend/ent/entgen/tbladdress"
+	"rr-backend/ent/entgen/tbldocument"
+	"rr-backend/ent/entgen/tblenum"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblsuperadmin"
 	"rr-backend/ent/entgen/tblusers"
 	"sync"
@@ -74,8 +78,12 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			tblsuperadmin.Table: tblsuperadmin.ValidColumn,
-			tblusers.Table:      tblusers.ValidColumn,
+			tbladdress.Table:     tbladdress.ValidColumn,
+			tbldocument.Table:    tbldocument.ValidColumn,
+			tblenum.Table:        tblenum.ValidColumn,
+			tblgarageowner.Table: tblgarageowner.ValidColumn,
+			tblsuperadmin.Table:  tblsuperadmin.ValidColumn,
+			tblusers.Table:       tblusers.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

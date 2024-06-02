@@ -1,12 +1,11 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS Tbl_Users(
-    Id_ulid VARCHAR(40) PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Tbl_Enum(
+    Id_int INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
-    UserName VARCHAR(40) NOT NULL,
-    Password VARCHAR(40) NOT NULL,
-
-    Email VARCHAR(40) NULL,
+    Code VARCHAR(100) NOT NULL,
+    CodeType VARCHAR(100) NOT NULL,
+    DisplayText VARCHAR(100) NOT NULL,
 
     IP VARCHAR(155) NULL,
     UserAgent VARCHAR(155),
@@ -16,11 +15,11 @@ CREATE TABLE IF NOT EXISTS Tbl_Users(
     DeletedAt DATETIME NULL,
     CreatedBy VARCHAR(40) NULL,
     UpdatedBy VARCHAR(40) NULL,
-    DeletedBy VARCHAR(40) NULL
+    DeletedBy VARCHAR(40) NULL 
 );
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DELETE TABLE IF EXISTS Tbl_Users;
+DROP TABLE IF EXISTS Tbl_Enum;
 -- +goose StatementEnd
