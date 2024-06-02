@@ -9,5 +9,5 @@ import (
 // TblSuperAdmin is the predicate function for tblsuperadmin builders.
 type TblSuperAdmin func(*sql.Selector)
 
-// User is the predicate function for user builders.
-type User func(*sql.Selector)
+// TblUSers is the predicate function for tblusers builders.
+type TblUSers func(*sql.Selector)

@@ -14,8 +14,8 @@ type Tx struct {
 	config
 	// TblSuperAdmin is the client for interacting with the TblSuperAdmin builders.
 	TblSuperAdmin *TblSuperAdminClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// TblUSers is the client for interacting with the TblUSers builders.
+	TblUSers *TblUSersClient
 
 	// lazily loaded.
 	client     *Client
@@ -148,7 +148,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.TblSuperAdmin = NewTblSuperAdminClient(tx.config)
-	tx.User = NewUserClient(tx.config)
+	tx.TblUSers = NewTblUSersClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

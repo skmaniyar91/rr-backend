@@ -6,6 +6,7 @@ import (
 
 	"rr-backend/ent/entgen"
 	"rr-backend/ent/entgen/hook"
+	"rr-backend/ent/entgen/intercept"
 	"rr-backend/lib/restmdl"
 	"time"
 
@@ -35,7 +36,7 @@ func (c CommonAttribute) Fields() []ent.Field {
 		field.String("IP").StorageKey("IP").Optional().Nillable(),
 		field.String("UserAgent").StorageKey("UserAgent").Optional().Nillable(),
 		field.Time("CreatedAt").StorageKey("CreatedAt").Default(time.Now),
-		field.Time("UpdatedAt").StorageKey("UpdatedAt").Default(time.Now()).UpdateDefault(time.Now),
+		field.Time("UpdatedAt").StorageKey("UpdatedAt").Default(time.Now).UpdateDefault(time.Now),
 		field.Time("DeletedAt").StorageKey("DeletedAt").Optional().Nillable(),
 	}
 
@@ -48,6 +49,19 @@ func (c CommonAttribute) Fields() []ent.Field {
 	}
 
 	return fields
+}
+
+func (c CommonAttribute) Interceptors() []ent.Interceptor {
+	return []ent.Interceptor{
+		intercept.TraverseFunc(func(ctx context.Context, q intercept.Query) error {
+			// Skip soft-delete, means include soft-deleted entities.
+			if skip, _ := ctx.Value("SkipSoftDelete").(bool); skip {
+				return nil
+			}
+			c.P(q)
+			return nil
+		}),
+	}
 }
 
 func (CommonAttribute) P(w interface{ WhereP(...func(*sql.Selector)) }) {
@@ -66,7 +80,6 @@ func (c CommonAttribute) Hooks() []ent.Hook {
 				})
 
 				if !ok {
-					fmt.Print("brbr")
 					return nil, fmt.Errorf("unexpected mutation type %T from creating", m)
 				}
 
@@ -134,12 +147,14 @@ func (c CommonAttribute) Hooks() []ent.Hook {
 				mx, ok := m.(interface {
 					SetIP(string)
 					SetUserAgent(string)
+					WhereP(...func(*sql.Selector))
 				})
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T common", m)
 				}
 
 				rmd := ctx.Value("rmd").(restmdl.RequestMetaData)
+				c.P(mx)
 				mx.SetIP(*rmd.Ip)
 				mx.SetUserAgent(*rmd.UserAgent)
 

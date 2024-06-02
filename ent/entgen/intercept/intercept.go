@@ -8,7 +8,7 @@ import (
 	"rr-backend/ent/entgen"
 	"rr-backend/ent/entgen/predicate"
 	"rr-backend/ent/entgen/tblsuperadmin"
-	"rr-backend/ent/entgen/user"
+	"rr-backend/ent/entgen/tblusers"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -96,31 +96,31 @@ func (f TraverseTblSuperAdmin) Traverse(ctx context.Context, q entgen.Query) err
 	return fmt.Errorf("unexpected query type %T. expect *entgen.TblSuperAdminQuery", q)
 }
 
-// The UserFunc type is an adapter to allow the use of ordinary function as a Querier.
-type UserFunc func(context.Context, *entgen.UserQuery) (entgen.Value, error)
+// The TblUSersFunc type is an adapter to allow the use of ordinary function as a Querier.
+type TblUSersFunc func(context.Context, *entgen.TblUSersQuery) (entgen.Value, error)
 
 // Query calls f(ctx, q).
-func (f UserFunc) Query(ctx context.Context, q entgen.Query) (entgen.Value, error) {
-	if q, ok := q.(*entgen.UserQuery); ok {
+func (f TblUSersFunc) Query(ctx context.Context, q entgen.Query) (entgen.Value, error) {
+	if q, ok := q.(*entgen.TblUSersQuery); ok {
 		return f(ctx, q)
 	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *entgen.UserQuery", q)
+	return nil, fmt.Errorf("unexpected query type %T. expect *entgen.TblUSersQuery", q)
 }
 
-// The TraverseUser type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseUser func(context.Context, *entgen.UserQuery) error
+// The TraverseTblUSers type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseTblUSers func(context.Context, *entgen.TblUSersQuery) error
 
 // Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseUser) Intercept(next entgen.Querier) entgen.Querier {
+func (f TraverseTblUSers) Intercept(next entgen.Querier) entgen.Querier {
 	return next
 }
 
 // Traverse calls f(ctx, q).
-func (f TraverseUser) Traverse(ctx context.Context, q entgen.Query) error {
-	if q, ok := q.(*entgen.UserQuery); ok {
+func (f TraverseTblUSers) Traverse(ctx context.Context, q entgen.Query) error {
+	if q, ok := q.(*entgen.TblUSersQuery); ok {
 		return f(ctx, q)
 	}
-	return fmt.Errorf("unexpected query type %T. expect *entgen.UserQuery", q)
+	return fmt.Errorf("unexpected query type %T. expect *entgen.TblUSersQuery", q)
 }
 
 // NewQuery returns the generic Query interface for the given typed query.
@@ -128,8 +128,8 @@ func NewQuery(q entgen.Query) (Query, error) {
 	switch q := q.(type) {
 	case *entgen.TblSuperAdminQuery:
 		return &query[*entgen.TblSuperAdminQuery, predicate.TblSuperAdmin, tblsuperadmin.OrderOption]{typ: entgen.TypeTblSuperAdmin, tq: q}, nil
-	case *entgen.UserQuery:
-		return &query[*entgen.UserQuery, predicate.User, user.OrderOption]{typ: entgen.TypeUser, tq: q}, nil
+	case *entgen.TblUSersQuery:
+		return &query[*entgen.TblUSersQuery, predicate.TblUSers, tblusers.OrderOption]{typ: entgen.TypeTblUSers, tq: q}, nil
 	default:
 		return nil, fmt.Errorf("unknown query type %T", q)
 	}
