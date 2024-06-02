@@ -15,7 +15,7 @@ var (
 		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
 		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
 		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
-		{Name: "Ip", Type: field.TypeString, Nullable: true},
+		{Name: "IP", Type: field.TypeString, Nullable: true},
 		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
 		{Name: "CreatedAt", Type: field.TypeTime},
 		{Name: "UpdatedAt", Type: field.TypeTime},
@@ -29,25 +29,39 @@ var (
 		Columns:    TblSuperAdminColumns,
 		PrimaryKey: []*schema.Column{TblSuperAdminColumns[0]},
 	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+	// TblUsersColumns holds the columns for the "Tbl_Users" table.
+	TblUsersColumns = []*schema.Column{
+		{Name: "Id_ulid", Type: field.TypeString, Size: 40},
+		{Name: "CreatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "UpdatedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "DeletedBy", Type: field.TypeString, Nullable: true, Size: 40},
+		{Name: "IP", Type: field.TypeString, Nullable: true},
+		{Name: "UserAgent", Type: field.TypeString, Nullable: true},
+		{Name: "CreatedAt", Type: field.TypeTime},
+		{Name: "UpdatedAt", Type: field.TypeTime},
+		{Name: "DeletedAt", Type: field.TypeTime, Nullable: true},
+		{Name: "UserName", Type: field.TypeString, Size: 40},
+		{Name: "Password", Type: field.TypeString, Size: 40},
+		{Name: "Email", Type: field.TypeString, Nullable: true, Size: 40},
 	}
-	// UsersTable holds the schema information for the "users" table.
-	UsersTable = &schema.Table{
-		Name:       "users",
-		Columns:    UsersColumns,
-		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	// TblUsersTable holds the schema information for the "Tbl_Users" table.
+	TblUsersTable = &schema.Table{
+		Name:       "Tbl_Users",
+		Columns:    TblUsersColumns,
+		PrimaryKey: []*schema.Column{TblUsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		TblSuperAdminTable,
-		UsersTable,
+		TblUsersTable,
 	}
 )
 
 func init() {
 	TblSuperAdminTable.Annotation = &entsql.Annotation{
 		Table: "Tbl_SuperAdmin",
+	}
+	TblUsersTable.Annotation = &entsql.Annotation{
+		Table: "Tbl_Users",
 	}
 }

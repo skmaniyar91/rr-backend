@@ -10,4 +10,5 @@ func InitRoutes(e *echo.Echo, appcongif config.IAppConfig) {
 	apiGrp := e.Group("/api/rr-backend")
 
 	initAuthRoutes(apiGrp, appcongif)
+	initiUsersRoutes(*apiGrp, appcongif)
 }

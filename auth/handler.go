@@ -15,10 +15,13 @@ type IAuthHandler interface {
 }
 
 type sAuthHandler struct {
+	storage IAuthStorage
 }
 
 func NewAuthHandler(config config.IAppConfig) IAuthHandler {
-	return &sAuthHandler{}
+	return &sAuthHandler{
+		storage: NewAuthStorage(config),
+	}
 }
 
 func (s *sAuthHandler) Login(c echo.Context) error {
@@ -29,19 +32,12 @@ func (s *sAuthHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "missing credentials")
 	}
 
-	if username == "samir" && password == "123" {
-		accessToken, err := CreateToken("SM001")
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
-		}
-
-		var token RSToken
-		token.AccessToken = accessToken
-
-		return c.JSON(http.StatusOK, token)
+	token, err := s.storage.Login(username, password)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, err.Error())
 	}
 
-	return c.JSON(http.StatusUnauthorized, "Unsuthorized")
+	return c.JSON(http.StatusOK, token)
 }
 
 func (s *sAuthHandler) LoginTest(c echo.Context) error {

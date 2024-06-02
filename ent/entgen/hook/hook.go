@@ -20,16 +20,16 @@ func (f TblSuperAdminFunc) Mutate(ctx context.Context, m entgen.Mutation) (entge
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblSuperAdminMutation", m)
 }
 
-// The UserFunc type is an adapter to allow the use of ordinary
-// function as User mutator.
-type UserFunc func(context.Context, *entgen.UserMutation) (entgen.Value, error)
+// The TblUSersFunc type is an adapter to allow the use of ordinary
+// function as TblUSers mutator.
+type TblUSersFunc func(context.Context, *entgen.TblUSersMutation) (entgen.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
-	if mv, ok := m.(*entgen.UserMutation); ok {
+func (f TblUSersFunc) Mutate(ctx context.Context, m entgen.Mutation) (entgen.Value, error) {
+	if mv, ok := m.(*entgen.TblUSersMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.UserMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *entgen.TblUSersMutation", m)
 }
 
 // Condition is a hook condition function.

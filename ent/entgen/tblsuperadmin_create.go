@@ -62,13 +62,13 @@ func (tsac *TblSuperAdminCreate) SetNillableDeletedBy(s *string) *TblSuperAdminC
 	return tsac
 }
 
-// SetIP sets the "Ip" field.
+// SetIP sets the "IP" field.
 func (tsac *TblSuperAdminCreate) SetIP(s string) *TblSuperAdminCreate {
 	tsac.mutation.SetIP(s)
 	return tsac
 }
 
-// SetNillableIP sets the "Ip" field if the given value is not nil.
+// SetNillableIP sets the "IP" field if the given value is not nil.
 func (tsac *TblSuperAdminCreate) SetNillableIP(s *string) *TblSuperAdminCreate {
 	if s != nil {
 		tsac.SetIP(*s)
@@ -203,7 +203,10 @@ func (tsac *TblSuperAdminCreate) defaults() error {
 		tsac.mutation.SetCreatedAt(v)
 	}
 	if _, ok := tsac.mutation.UpdatedAt(); !ok {
-		v := tblsuperadmin.DefaultUpdatedAt
+		if tblsuperadmin.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entgen: uninitialized tblsuperadmin.DefaultUpdatedAt (forgotten import entgen/runtime?)")
+		}
+		v := tblsuperadmin.DefaultUpdatedAt()
 		tsac.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := tsac.mutation.ID(); !ok {
