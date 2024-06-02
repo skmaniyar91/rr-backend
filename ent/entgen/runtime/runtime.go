@@ -3,6 +3,10 @@
 package runtime
 
 import (
+	"rr-backend/ent/entgen/tbladdress"
+	"rr-backend/ent/entgen/tbldocument"
+	"rr-backend/ent/entgen/tblenum"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblsuperadmin"
 	"rr-backend/ent/entgen/tblusers"
 	"rr-backend/ent/schema"
@@ -13,6 +17,252 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	tbladdressMixin := schema.TblAddress{}.Mixin()
+	tbladdressMixinHooks0 := tbladdressMixin[0].Hooks()
+	tbladdress.Hooks[0] = tbladdressMixinHooks0[0]
+	tbladdress.Hooks[1] = tbladdressMixinHooks0[1]
+	tbladdress.Hooks[2] = tbladdressMixinHooks0[2]
+	tbladdress.Hooks[3] = tbladdressMixinHooks0[3]
+	tbladdressMixinInters0 := tbladdressMixin[0].Interceptors()
+	tbladdress.Interceptors[0] = tbladdressMixinInters0[0]
+	tbladdressMixinFields0 := tbladdressMixin[0].Fields()
+	_ = tbladdressMixinFields0
+	tbladdressFields := schema.TblAddress{}.Fields()
+	_ = tbladdressFields
+	// tbladdressDescCreatedBy is the schema descriptor for CreatedBy field.
+	tbladdressDescCreatedBy := tbladdressMixinFields0[0].Descriptor()
+	// tbladdress.CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
+	tbladdress.CreatedByValidator = tbladdressDescCreatedBy.Validators[0].(func(string) error)
+	// tbladdressDescUpdatedBy is the schema descriptor for UpdatedBy field.
+	tbladdressDescUpdatedBy := tbladdressMixinFields0[1].Descriptor()
+	// tbladdress.UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
+	tbladdress.UpdatedByValidator = tbladdressDescUpdatedBy.Validators[0].(func(string) error)
+	// tbladdressDescDeletedBy is the schema descriptor for DeletedBy field.
+	tbladdressDescDeletedBy := tbladdressMixinFields0[2].Descriptor()
+	// tbladdress.DeletedByValidator is a validator for the "DeletedBy" field. It is called by the builders before save.
+	tbladdress.DeletedByValidator = tbladdressDescDeletedBy.Validators[0].(func(string) error)
+	// tbladdressDescCreatedAt is the schema descriptor for CreatedAt field.
+	tbladdressDescCreatedAt := tbladdressMixinFields0[5].Descriptor()
+	// tbladdress.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	tbladdress.DefaultCreatedAt = tbladdressDescCreatedAt.Default.(func() time.Time)
+	// tbladdressDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	tbladdressDescUpdatedAt := tbladdressMixinFields0[6].Descriptor()
+	// tbladdress.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
+	tbladdress.DefaultUpdatedAt = tbladdressDescUpdatedAt.Default.(func() time.Time)
+	// tbladdress.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	tbladdress.UpdateDefaultUpdatedAt = tbladdressDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tbladdressDescLine1 is the schema descriptor for Line1 field.
+	tbladdressDescLine1 := tbladdressFields[0].Descriptor()
+	// tbladdress.Line1Validator is a validator for the "Line1" field. It is called by the builders before save.
+	tbladdress.Line1Validator = tbladdressDescLine1.Validators[0].(func(string) error)
+	// tbladdressDescLine2 is the schema descriptor for Line2 field.
+	tbladdressDescLine2 := tbladdressFields[1].Descriptor()
+	// tbladdress.Line2Validator is a validator for the "Line2" field. It is called by the builders before save.
+	tbladdress.Line2Validator = tbladdressDescLine2.Validators[0].(func(string) error)
+	// tbladdressDescLine3 is the schema descriptor for Line3 field.
+	tbladdressDescLine3 := tbladdressFields[2].Descriptor()
+	// tbladdress.Line3Validator is a validator for the "Line3" field. It is called by the builders before save.
+	tbladdress.Line3Validator = tbladdressDescLine3.Validators[0].(func(string) error)
+	// tbladdressDescCity is the schema descriptor for City field.
+	tbladdressDescCity := tbladdressFields[3].Descriptor()
+	// tbladdress.CityValidator is a validator for the "City" field. It is called by the builders before save.
+	tbladdress.CityValidator = tbladdressDescCity.Validators[0].(func(string) error)
+	// tbladdressDescDistrict is the schema descriptor for District field.
+	tbladdressDescDistrict := tbladdressFields[4].Descriptor()
+	// tbladdress.DistrictValidator is a validator for the "District" field. It is called by the builders before save.
+	tbladdress.DistrictValidator = tbladdressDescDistrict.Validators[0].(func(string) error)
+	// tbladdressDescSubDistrict is the schema descriptor for SubDistrict field.
+	tbladdressDescSubDistrict := tbladdressFields[5].Descriptor()
+	// tbladdress.SubDistrictValidator is a validator for the "SubDistrict" field. It is called by the builders before save.
+	tbladdress.SubDistrictValidator = tbladdressDescSubDistrict.Validators[0].(func(string) error)
+	// tbladdressDescState is the schema descriptor for State field.
+	tbladdressDescState := tbladdressFields[6].Descriptor()
+	// tbladdress.StateValidator is a validator for the "State" field. It is called by the builders before save.
+	tbladdress.StateValidator = tbladdressDescState.Validators[0].(func(string) error)
+	// tbladdressDescCountry is the schema descriptor for Country field.
+	tbladdressDescCountry := tbladdressFields[7].Descriptor()
+	// tbladdress.CountryValidator is a validator for the "Country" field. It is called by the builders before save.
+	tbladdress.CountryValidator = tbladdressDescCountry.Validators[0].(func(string) error)
+	// tbladdressDescPostalCode is the schema descriptor for PostalCode field.
+	tbladdressDescPostalCode := tbladdressFields[8].Descriptor()
+	// tbladdress.PostalCodeValidator is a validator for the "PostalCode" field. It is called by the builders before save.
+	tbladdress.PostalCodeValidator = tbladdressDescPostalCode.Validators[0].(func(string) error)
+	// tbladdressDescID is the schema descriptor for id field.
+	tbladdressDescID := tbladdressMixinFields0[8].Descriptor()
+	// tbladdress.DefaultID holds the default value on creation for the id field.
+	tbladdress.DefaultID = tbladdressDescID.Default.(func() string)
+	// tbladdress.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tbladdress.IDValidator = tbladdressDescID.Validators[0].(func(string) error)
+	tbldocumentMixin := schema.TblDocument{}.Mixin()
+	tbldocumentMixinHooks0 := tbldocumentMixin[0].Hooks()
+	tbldocument.Hooks[0] = tbldocumentMixinHooks0[0]
+	tbldocument.Hooks[1] = tbldocumentMixinHooks0[1]
+	tbldocument.Hooks[2] = tbldocumentMixinHooks0[2]
+	tbldocument.Hooks[3] = tbldocumentMixinHooks0[3]
+	tbldocumentMixinInters0 := tbldocumentMixin[0].Interceptors()
+	tbldocument.Interceptors[0] = tbldocumentMixinInters0[0]
+	tbldocumentMixinFields0 := tbldocumentMixin[0].Fields()
+	_ = tbldocumentMixinFields0
+	tbldocumentFields := schema.TblDocument{}.Fields()
+	_ = tbldocumentFields
+	// tbldocumentDescCreatedBy is the schema descriptor for CreatedBy field.
+	tbldocumentDescCreatedBy := tbldocumentMixinFields0[0].Descriptor()
+	// tbldocument.CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
+	tbldocument.CreatedByValidator = tbldocumentDescCreatedBy.Validators[0].(func(string) error)
+	// tbldocumentDescUpdatedBy is the schema descriptor for UpdatedBy field.
+	tbldocumentDescUpdatedBy := tbldocumentMixinFields0[1].Descriptor()
+	// tbldocument.UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
+	tbldocument.UpdatedByValidator = tbldocumentDescUpdatedBy.Validators[0].(func(string) error)
+	// tbldocumentDescDeletedBy is the schema descriptor for DeletedBy field.
+	tbldocumentDescDeletedBy := tbldocumentMixinFields0[2].Descriptor()
+	// tbldocument.DeletedByValidator is a validator for the "DeletedBy" field. It is called by the builders before save.
+	tbldocument.DeletedByValidator = tbldocumentDescDeletedBy.Validators[0].(func(string) error)
+	// tbldocumentDescCreatedAt is the schema descriptor for CreatedAt field.
+	tbldocumentDescCreatedAt := tbldocumentMixinFields0[5].Descriptor()
+	// tbldocument.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	tbldocument.DefaultCreatedAt = tbldocumentDescCreatedAt.Default.(func() time.Time)
+	// tbldocumentDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	tbldocumentDescUpdatedAt := tbldocumentMixinFields0[6].Descriptor()
+	// tbldocument.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
+	tbldocument.DefaultUpdatedAt = tbldocumentDescUpdatedAt.Default.(func() time.Time)
+	// tbldocument.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	tbldocument.UpdateDefaultUpdatedAt = tbldocumentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tbldocumentDescName is the schema descriptor for Name field.
+	tbldocumentDescName := tbldocumentFields[0].Descriptor()
+	// tbldocument.NameValidator is a validator for the "Name" field. It is called by the builders before save.
+	tbldocument.NameValidator = tbldocumentDescName.Validators[0].(func(string) error)
+	// tbldocumentDescRelativePath is the schema descriptor for RelativePath field.
+	tbldocumentDescRelativePath := tbldocumentFields[1].Descriptor()
+	// tbldocument.RelativePathValidator is a validator for the "RelativePath" field. It is called by the builders before save.
+	tbldocument.RelativePathValidator = tbldocumentDescRelativePath.Validators[0].(func(string) error)
+	// tbldocumentDescURL is the schema descriptor for URL field.
+	tbldocumentDescURL := tbldocumentFields[2].Descriptor()
+	// tbldocument.URLValidator is a validator for the "URL" field. It is called by the builders before save.
+	tbldocument.URLValidator = tbldocumentDescURL.Validators[0].(func(string) error)
+	// tbldocumentDescID is the schema descriptor for id field.
+	tbldocumentDescID := tbldocumentMixinFields0[8].Descriptor()
+	// tbldocument.DefaultID holds the default value on creation for the id field.
+	tbldocument.DefaultID = tbldocumentDescID.Default.(func() string)
+	// tbldocument.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tbldocument.IDValidator = tbldocumentDescID.Validators[0].(func(string) error)
+	tblenumMixin := schema.TblEnum{}.Mixin()
+	tblenumMixinHooks0 := tblenumMixin[0].Hooks()
+	tblenum.Hooks[0] = tblenumMixinHooks0[0]
+	tblenum.Hooks[1] = tblenumMixinHooks0[1]
+	tblenum.Hooks[2] = tblenumMixinHooks0[2]
+	tblenum.Hooks[3] = tblenumMixinHooks0[3]
+	tblenumMixinInters0 := tblenumMixin[0].Interceptors()
+	tblenum.Interceptors[0] = tblenumMixinInters0[0]
+	tblenumMixinFields0 := tblenumMixin[0].Fields()
+	_ = tblenumMixinFields0
+	tblenumFields := schema.TblEnum{}.Fields()
+	_ = tblenumFields
+	// tblenumDescCreatedBy is the schema descriptor for CreatedBy field.
+	tblenumDescCreatedBy := tblenumMixinFields0[0].Descriptor()
+	// tblenum.CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
+	tblenum.CreatedByValidator = tblenumDescCreatedBy.Validators[0].(func(string) error)
+	// tblenumDescUpdatedBy is the schema descriptor for UpdatedBy field.
+	tblenumDescUpdatedBy := tblenumMixinFields0[1].Descriptor()
+	// tblenum.UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
+	tblenum.UpdatedByValidator = tblenumDescUpdatedBy.Validators[0].(func(string) error)
+	// tblenumDescDeletedBy is the schema descriptor for DeletedBy field.
+	tblenumDescDeletedBy := tblenumMixinFields0[2].Descriptor()
+	// tblenum.DeletedByValidator is a validator for the "DeletedBy" field. It is called by the builders before save.
+	tblenum.DeletedByValidator = tblenumDescDeletedBy.Validators[0].(func(string) error)
+	// tblenumDescCreatedAt is the schema descriptor for CreatedAt field.
+	tblenumDescCreatedAt := tblenumMixinFields0[5].Descriptor()
+	// tblenum.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	tblenum.DefaultCreatedAt = tblenumDescCreatedAt.Default.(func() time.Time)
+	// tblenumDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	tblenumDescUpdatedAt := tblenumMixinFields0[6].Descriptor()
+	// tblenum.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
+	tblenum.DefaultUpdatedAt = tblenumDescUpdatedAt.Default.(func() time.Time)
+	// tblenum.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	tblenum.UpdateDefaultUpdatedAt = tblenumDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tblenumDescCode is the schema descriptor for Code field.
+	tblenumDescCode := tblenumFields[0].Descriptor()
+	// tblenum.CodeValidator is a validator for the "Code" field. It is called by the builders before save.
+	tblenum.CodeValidator = tblenumDescCode.Validators[0].(func(string) error)
+	// tblenumDescCodeType is the schema descriptor for CodeType field.
+	tblenumDescCodeType := tblenumFields[1].Descriptor()
+	// tblenum.CodeTypeValidator is a validator for the "CodeType" field. It is called by the builders before save.
+	tblenum.CodeTypeValidator = tblenumDescCodeType.Validators[0].(func(string) error)
+	// tblenumDescDisplayText is the schema descriptor for DisplayText field.
+	tblenumDescDisplayText := tblenumFields[2].Descriptor()
+	// tblenum.DisplayTextValidator is a validator for the "DisplayText" field. It is called by the builders before save.
+	tblenum.DisplayTextValidator = tblenumDescDisplayText.Validators[0].(func(string) error)
+	tblgarageownerMixin := schema.TblGarageOwner{}.Mixin()
+	tblgarageownerMixinHooks0 := tblgarageownerMixin[0].Hooks()
+	tblgarageowner.Hooks[0] = tblgarageownerMixinHooks0[0]
+	tblgarageowner.Hooks[1] = tblgarageownerMixinHooks0[1]
+	tblgarageowner.Hooks[2] = tblgarageownerMixinHooks0[2]
+	tblgarageowner.Hooks[3] = tblgarageownerMixinHooks0[3]
+	tblgarageownerMixinInters0 := tblgarageownerMixin[0].Interceptors()
+	tblgarageowner.Interceptors[0] = tblgarageownerMixinInters0[0]
+	tblgarageownerMixinFields0 := tblgarageownerMixin[0].Fields()
+	_ = tblgarageownerMixinFields0
+	tblgarageownerFields := schema.TblGarageOwner{}.Fields()
+	_ = tblgarageownerFields
+	// tblgarageownerDescCreatedBy is the schema descriptor for CreatedBy field.
+	tblgarageownerDescCreatedBy := tblgarageownerMixinFields0[0].Descriptor()
+	// tblgarageowner.CreatedByValidator is a validator for the "CreatedBy" field. It is called by the builders before save.
+	tblgarageowner.CreatedByValidator = tblgarageownerDescCreatedBy.Validators[0].(func(string) error)
+	// tblgarageownerDescUpdatedBy is the schema descriptor for UpdatedBy field.
+	tblgarageownerDescUpdatedBy := tblgarageownerMixinFields0[1].Descriptor()
+	// tblgarageowner.UpdatedByValidator is a validator for the "UpdatedBy" field. It is called by the builders before save.
+	tblgarageowner.UpdatedByValidator = tblgarageownerDescUpdatedBy.Validators[0].(func(string) error)
+	// tblgarageownerDescDeletedBy is the schema descriptor for DeletedBy field.
+	tblgarageownerDescDeletedBy := tblgarageownerMixinFields0[2].Descriptor()
+	// tblgarageowner.DeletedByValidator is a validator for the "DeletedBy" field. It is called by the builders before save.
+	tblgarageowner.DeletedByValidator = tblgarageownerDescDeletedBy.Validators[0].(func(string) error)
+	// tblgarageownerDescCreatedAt is the schema descriptor for CreatedAt field.
+	tblgarageownerDescCreatedAt := tblgarageownerMixinFields0[5].Descriptor()
+	// tblgarageowner.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	tblgarageowner.DefaultCreatedAt = tblgarageownerDescCreatedAt.Default.(func() time.Time)
+	// tblgarageownerDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	tblgarageownerDescUpdatedAt := tblgarageownerMixinFields0[6].Descriptor()
+	// tblgarageowner.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
+	tblgarageowner.DefaultUpdatedAt = tblgarageownerDescUpdatedAt.Default.(func() time.Time)
+	// tblgarageowner.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	tblgarageowner.UpdateDefaultUpdatedAt = tblgarageownerDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tblgarageownerDescUserIdUlid is the schema descriptor for UserId_ulid field.
+	tblgarageownerDescUserIdUlid := tblgarageownerFields[0].Descriptor()
+	// tblgarageowner.UserIdUlidValidator is a validator for the "UserId_ulid" field. It is called by the builders before save.
+	tblgarageowner.UserIdUlidValidator = tblgarageownerDescUserIdUlid.Validators[0].(func(string) error)
+	// tblgarageownerDescFirstName is the schema descriptor for FirstName field.
+	tblgarageownerDescFirstName := tblgarageownerFields[2].Descriptor()
+	// tblgarageowner.FirstNameValidator is a validator for the "FirstName" field. It is called by the builders before save.
+	tblgarageowner.FirstNameValidator = tblgarageownerDescFirstName.Validators[0].(func(string) error)
+	// tblgarageownerDescMiddleName is the schema descriptor for MiddleName field.
+	tblgarageownerDescMiddleName := tblgarageownerFields[3].Descriptor()
+	// tblgarageowner.MiddleNameValidator is a validator for the "MiddleName" field. It is called by the builders before save.
+	tblgarageowner.MiddleNameValidator = tblgarageownerDescMiddleName.Validators[0].(func(string) error)
+	// tblgarageownerDescLastName is the schema descriptor for LastName field.
+	tblgarageownerDescLastName := tblgarageownerFields[4].Descriptor()
+	// tblgarageowner.LastNameValidator is a validator for the "LastName" field. It is called by the builders before save.
+	tblgarageowner.LastNameValidator = tblgarageownerDescLastName.Validators[0].(func(string) error)
+	// tblgarageownerDescContactNumber is the schema descriptor for ContactNumber field.
+	tblgarageownerDescContactNumber := tblgarageownerFields[5].Descriptor()
+	// tblgarageowner.ContactNumberValidator is a validator for the "ContactNumber" field. It is called by the builders before save.
+	tblgarageowner.ContactNumberValidator = tblgarageownerDescContactNumber.Validators[0].(func(string) error)
+	// tblgarageownerDescEmail is the schema descriptor for Email field.
+	tblgarageownerDescEmail := tblgarageownerFields[6].Descriptor()
+	// tblgarageowner.EmailValidator is a validator for the "Email" field. It is called by the builders before save.
+	tblgarageowner.EmailValidator = tblgarageownerDescEmail.Validators[0].(func(string) error)
+	// tblgarageownerDescPhotoIdUlid is the schema descriptor for PhotoId_ulid field.
+	tblgarageownerDescPhotoIdUlid := tblgarageownerFields[8].Descriptor()
+	// tblgarageowner.PhotoIdUlidValidator is a validator for the "PhotoId_ulid" field. It is called by the builders before save.
+	tblgarageowner.PhotoIdUlidValidator = tblgarageownerDescPhotoIdUlid.Validators[0].(func(string) error)
+	// tblgarageownerDescAddressIdUlid is the schema descriptor for AddressId_ulid field.
+	tblgarageownerDescAddressIdUlid := tblgarageownerFields[9].Descriptor()
+	// tblgarageowner.AddressIdUlidValidator is a validator for the "AddressId_ulid" field. It is called by the builders before save.
+	tblgarageowner.AddressIdUlidValidator = tblgarageownerDescAddressIdUlid.Validators[0].(func(string) error)
+	// tblgarageownerDescID is the schema descriptor for id field.
+	tblgarageownerDescID := tblgarageownerMixinFields0[8].Descriptor()
+	// tblgarageowner.DefaultID holds the default value on creation for the id field.
+	tblgarageowner.DefaultID = tblgarageownerDescID.Default.(func() string)
+	// tblgarageowner.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tblgarageowner.IDValidator = tblgarageownerDescID.Validators[0].(func(string) error)
 	tblsuperadminMixin := schema.TblSuperAdmin{}.Mixin()
 	tblsuperadminMixinHooks0 := tblsuperadminMixin[0].Hooks()
 	tblsuperadmin.Hooks[0] = tblsuperadminMixinHooks0[0]

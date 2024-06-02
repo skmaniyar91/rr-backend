@@ -11,12 +11,17 @@ import (
 
 	"rr-backend/ent/entgen/migrate"
 
+	"rr-backend/ent/entgen/tbladdress"
+	"rr-backend/ent/entgen/tbldocument"
+	"rr-backend/ent/entgen/tblenum"
+	"rr-backend/ent/entgen/tblgarageowner"
 	"rr-backend/ent/entgen/tblsuperadmin"
 	"rr-backend/ent/entgen/tblusers"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -24,6 +29,14 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// TblAddress is the client for interacting with the TblAddress builders.
+	TblAddress *TblAddressClient
+	// TblDocument is the client for interacting with the TblDocument builders.
+	TblDocument *TblDocumentClient
+	// TblEnum is the client for interacting with the TblEnum builders.
+	TblEnum *TblEnumClient
+	// TblGarageOwner is the client for interacting with the TblGarageOwner builders.
+	TblGarageOwner *TblGarageOwnerClient
 	// TblSuperAdmin is the client for interacting with the TblSuperAdmin builders.
 	TblSuperAdmin *TblSuperAdminClient
 	// TblUSers is the client for interacting with the TblUSers builders.
@@ -39,6 +52,10 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.TblAddress = NewTblAddressClient(c.config)
+	c.TblDocument = NewTblDocumentClient(c.config)
+	c.TblEnum = NewTblEnumClient(c.config)
+	c.TblGarageOwner = NewTblGarageOwnerClient(c.config)
 	c.TblSuperAdmin = NewTblSuperAdminClient(c.config)
 	c.TblUSers = NewTblUSersClient(c.config)
 }
@@ -131,10 +148,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		TblSuperAdmin: NewTblSuperAdminClient(cfg),
-		TblUSers:      NewTblUSersClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		TblAddress:     NewTblAddressClient(cfg),
+		TblDocument:    NewTblDocumentClient(cfg),
+		TblEnum:        NewTblEnumClient(cfg),
+		TblGarageOwner: NewTblGarageOwnerClient(cfg),
+		TblSuperAdmin:  NewTblSuperAdminClient(cfg),
+		TblUSers:       NewTblUSersClient(cfg),
 	}, nil
 }
 
@@ -152,17 +173,21 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		TblSuperAdmin: NewTblSuperAdminClient(cfg),
-		TblUSers:      NewTblUSersClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		TblAddress:     NewTblAddressClient(cfg),
+		TblDocument:    NewTblDocumentClient(cfg),
+		TblEnum:        NewTblEnumClient(cfg),
+		TblGarageOwner: NewTblGarageOwnerClient(cfg),
+		TblSuperAdmin:  NewTblSuperAdminClient(cfg),
+		TblUSers:       NewTblUSersClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		TblSuperAdmin.
+//		TblAddress.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -184,26 +209,694 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.TblSuperAdmin.Use(hooks...)
-	c.TblUSers.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.TblAddress, c.TblDocument, c.TblEnum, c.TblGarageOwner, c.TblSuperAdmin,
+		c.TblUSers,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.TblSuperAdmin.Intercept(interceptors...)
-	c.TblUSers.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.TblAddress, c.TblDocument, c.TblEnum, c.TblGarageOwner, c.TblSuperAdmin,
+		c.TblUSers,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *TblAddressMutation:
+		return c.TblAddress.mutate(ctx, m)
+	case *TblDocumentMutation:
+		return c.TblDocument.mutate(ctx, m)
+	case *TblEnumMutation:
+		return c.TblEnum.mutate(ctx, m)
+	case *TblGarageOwnerMutation:
+		return c.TblGarageOwner.mutate(ctx, m)
 	case *TblSuperAdminMutation:
 		return c.TblSuperAdmin.mutate(ctx, m)
 	case *TblUSersMutation:
 		return c.TblUSers.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("entgen: unknown mutation type %T", m)
+	}
+}
+
+// TblAddressClient is a client for the TblAddress schema.
+type TblAddressClient struct {
+	config
+}
+
+// NewTblAddressClient returns a client for the TblAddress from the given config.
+func NewTblAddressClient(c config) *TblAddressClient {
+	return &TblAddressClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tbladdress.Hooks(f(g(h())))`.
+func (c *TblAddressClient) Use(hooks ...Hook) {
+	c.hooks.TblAddress = append(c.hooks.TblAddress, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tbladdress.Intercept(f(g(h())))`.
+func (c *TblAddressClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TblAddress = append(c.inters.TblAddress, interceptors...)
+}
+
+// Create returns a builder for creating a TblAddress entity.
+func (c *TblAddressClient) Create() *TblAddressCreate {
+	mutation := newTblAddressMutation(c.config, OpCreate)
+	return &TblAddressCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TblAddress entities.
+func (c *TblAddressClient) CreateBulk(builders ...*TblAddressCreate) *TblAddressCreateBulk {
+	return &TblAddressCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TblAddressClient) MapCreateBulk(slice any, setFunc func(*TblAddressCreate, int)) *TblAddressCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TblAddressCreateBulk{err: fmt.Errorf("calling to TblAddressClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TblAddressCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TblAddressCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TblAddress.
+func (c *TblAddressClient) Update() *TblAddressUpdate {
+	mutation := newTblAddressMutation(c.config, OpUpdate)
+	return &TblAddressUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TblAddressClient) UpdateOne(ta *TblAddress) *TblAddressUpdateOne {
+	mutation := newTblAddressMutation(c.config, OpUpdateOne, withTblAddress(ta))
+	return &TblAddressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TblAddressClient) UpdateOneID(id string) *TblAddressUpdateOne {
+	mutation := newTblAddressMutation(c.config, OpUpdateOne, withTblAddressID(id))
+	return &TblAddressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TblAddress.
+func (c *TblAddressClient) Delete() *TblAddressDelete {
+	mutation := newTblAddressMutation(c.config, OpDelete)
+	return &TblAddressDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TblAddressClient) DeleteOne(ta *TblAddress) *TblAddressDeleteOne {
+	return c.DeleteOneID(ta.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TblAddressClient) DeleteOneID(id string) *TblAddressDeleteOne {
+	builder := c.Delete().Where(tbladdress.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TblAddressDeleteOne{builder}
+}
+
+// Query returns a query builder for TblAddress.
+func (c *TblAddressClient) Query() *TblAddressQuery {
+	return &TblAddressQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTblAddress},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TblAddress entity by its id.
+func (c *TblAddressClient) Get(ctx context.Context, id string) (*TblAddress, error) {
+	return c.Query().Where(tbladdress.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TblAddressClient) GetX(ctx context.Context, id string) *TblAddress {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOwnerAddress queries the OwnerAddress edge of a TblAddress.
+func (c *TblAddressClient) QueryOwnerAddress(ta *TblAddress) *TblGarageOwnerQuery {
+	query := (&TblGarageOwnerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ta.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tbladdress.Table, tbladdress.FieldID, id),
+			sqlgraph.To(tblgarageowner.Table, tblgarageowner.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, tbladdress.OwnerAddressTable, tbladdress.OwnerAddressColumn),
+		)
+		fromV = sqlgraph.Neighbors(ta.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TblAddressClient) Hooks() []Hook {
+	hooks := c.hooks.TblAddress
+	return append(hooks[:len(hooks):len(hooks)], tbladdress.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *TblAddressClient) Interceptors() []Interceptor {
+	inters := c.inters.TblAddress
+	return append(inters[:len(inters):len(inters)], tbladdress.Interceptors[:]...)
+}
+
+func (c *TblAddressClient) mutate(ctx context.Context, m *TblAddressMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TblAddressCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TblAddressUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TblAddressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TblAddressDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("entgen: unknown TblAddress mutation op: %q", m.Op())
+	}
+}
+
+// TblDocumentClient is a client for the TblDocument schema.
+type TblDocumentClient struct {
+	config
+}
+
+// NewTblDocumentClient returns a client for the TblDocument from the given config.
+func NewTblDocumentClient(c config) *TblDocumentClient {
+	return &TblDocumentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tbldocument.Hooks(f(g(h())))`.
+func (c *TblDocumentClient) Use(hooks ...Hook) {
+	c.hooks.TblDocument = append(c.hooks.TblDocument, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tbldocument.Intercept(f(g(h())))`.
+func (c *TblDocumentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TblDocument = append(c.inters.TblDocument, interceptors...)
+}
+
+// Create returns a builder for creating a TblDocument entity.
+func (c *TblDocumentClient) Create() *TblDocumentCreate {
+	mutation := newTblDocumentMutation(c.config, OpCreate)
+	return &TblDocumentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TblDocument entities.
+func (c *TblDocumentClient) CreateBulk(builders ...*TblDocumentCreate) *TblDocumentCreateBulk {
+	return &TblDocumentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TblDocumentClient) MapCreateBulk(slice any, setFunc func(*TblDocumentCreate, int)) *TblDocumentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TblDocumentCreateBulk{err: fmt.Errorf("calling to TblDocumentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TblDocumentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TblDocumentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TblDocument.
+func (c *TblDocumentClient) Update() *TblDocumentUpdate {
+	mutation := newTblDocumentMutation(c.config, OpUpdate)
+	return &TblDocumentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TblDocumentClient) UpdateOne(td *TblDocument) *TblDocumentUpdateOne {
+	mutation := newTblDocumentMutation(c.config, OpUpdateOne, withTblDocument(td))
+	return &TblDocumentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TblDocumentClient) UpdateOneID(id string) *TblDocumentUpdateOne {
+	mutation := newTblDocumentMutation(c.config, OpUpdateOne, withTblDocumentID(id))
+	return &TblDocumentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TblDocument.
+func (c *TblDocumentClient) Delete() *TblDocumentDelete {
+	mutation := newTblDocumentMutation(c.config, OpDelete)
+	return &TblDocumentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TblDocumentClient) DeleteOne(td *TblDocument) *TblDocumentDeleteOne {
+	return c.DeleteOneID(td.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TblDocumentClient) DeleteOneID(id string) *TblDocumentDeleteOne {
+	builder := c.Delete().Where(tbldocument.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TblDocumentDeleteOne{builder}
+}
+
+// Query returns a query builder for TblDocument.
+func (c *TblDocumentClient) Query() *TblDocumentQuery {
+	return &TblDocumentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTblDocument},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TblDocument entity by its id.
+func (c *TblDocumentClient) Get(ctx context.Context, id string) (*TblDocument, error) {
+	return c.Query().Where(tbldocument.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TblDocumentClient) GetX(ctx context.Context, id string) *TblDocument {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPhoto queries the Photo edge of a TblDocument.
+func (c *TblDocumentClient) QueryPhoto(td *TblDocument) *TblGarageOwnerQuery {
+	query := (&TblGarageOwnerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := td.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tbldocument.Table, tbldocument.FieldID, id),
+			sqlgraph.To(tblgarageowner.Table, tblgarageowner.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, tbldocument.PhotoTable, tbldocument.PhotoColumn),
+		)
+		fromV = sqlgraph.Neighbors(td.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TblDocumentClient) Hooks() []Hook {
+	hooks := c.hooks.TblDocument
+	return append(hooks[:len(hooks):len(hooks)], tbldocument.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *TblDocumentClient) Interceptors() []Interceptor {
+	inters := c.inters.TblDocument
+	return append(inters[:len(inters):len(inters)], tbldocument.Interceptors[:]...)
+}
+
+func (c *TblDocumentClient) mutate(ctx context.Context, m *TblDocumentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TblDocumentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TblDocumentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TblDocumentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TblDocumentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("entgen: unknown TblDocument mutation op: %q", m.Op())
+	}
+}
+
+// TblEnumClient is a client for the TblEnum schema.
+type TblEnumClient struct {
+	config
+}
+
+// NewTblEnumClient returns a client for the TblEnum from the given config.
+func NewTblEnumClient(c config) *TblEnumClient {
+	return &TblEnumClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tblenum.Hooks(f(g(h())))`.
+func (c *TblEnumClient) Use(hooks ...Hook) {
+	c.hooks.TblEnum = append(c.hooks.TblEnum, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tblenum.Intercept(f(g(h())))`.
+func (c *TblEnumClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TblEnum = append(c.inters.TblEnum, interceptors...)
+}
+
+// Create returns a builder for creating a TblEnum entity.
+func (c *TblEnumClient) Create() *TblEnumCreate {
+	mutation := newTblEnumMutation(c.config, OpCreate)
+	return &TblEnumCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TblEnum entities.
+func (c *TblEnumClient) CreateBulk(builders ...*TblEnumCreate) *TblEnumCreateBulk {
+	return &TblEnumCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TblEnumClient) MapCreateBulk(slice any, setFunc func(*TblEnumCreate, int)) *TblEnumCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TblEnumCreateBulk{err: fmt.Errorf("calling to TblEnumClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TblEnumCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TblEnumCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TblEnum.
+func (c *TblEnumClient) Update() *TblEnumUpdate {
+	mutation := newTblEnumMutation(c.config, OpUpdate)
+	return &TblEnumUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TblEnumClient) UpdateOne(te *TblEnum) *TblEnumUpdateOne {
+	mutation := newTblEnumMutation(c.config, OpUpdateOne, withTblEnum(te))
+	return &TblEnumUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TblEnumClient) UpdateOneID(id int) *TblEnumUpdateOne {
+	mutation := newTblEnumMutation(c.config, OpUpdateOne, withTblEnumID(id))
+	return &TblEnumUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TblEnum.
+func (c *TblEnumClient) Delete() *TblEnumDelete {
+	mutation := newTblEnumMutation(c.config, OpDelete)
+	return &TblEnumDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TblEnumClient) DeleteOne(te *TblEnum) *TblEnumDeleteOne {
+	return c.DeleteOneID(te.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TblEnumClient) DeleteOneID(id int) *TblEnumDeleteOne {
+	builder := c.Delete().Where(tblenum.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TblEnumDeleteOne{builder}
+}
+
+// Query returns a query builder for TblEnum.
+func (c *TblEnumClient) Query() *TblEnumQuery {
+	return &TblEnumQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTblEnum},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TblEnum entity by its id.
+func (c *TblEnumClient) Get(ctx context.Context, id int) (*TblEnum, error) {
+	return c.Query().Where(tblenum.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TblEnumClient) GetX(ctx context.Context, id int) *TblEnum {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryInitialEnum queries the InitialEnum edge of a TblEnum.
+func (c *TblEnumClient) QueryInitialEnum(te *TblEnum) *TblGarageOwnerQuery {
+	query := (&TblGarageOwnerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := te.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblenum.Table, tblenum.FieldID, id),
+			sqlgraph.To(tblgarageowner.Table, tblgarageowner.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, tblenum.InitialEnumTable, tblenum.InitialEnumColumn),
+		)
+		fromV = sqlgraph.Neighbors(te.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TblEnumClient) Hooks() []Hook {
+	hooks := c.hooks.TblEnum
+	return append(hooks[:len(hooks):len(hooks)], tblenum.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *TblEnumClient) Interceptors() []Interceptor {
+	inters := c.inters.TblEnum
+	return append(inters[:len(inters):len(inters)], tblenum.Interceptors[:]...)
+}
+
+func (c *TblEnumClient) mutate(ctx context.Context, m *TblEnumMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TblEnumCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TblEnumUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TblEnumUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TblEnumDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("entgen: unknown TblEnum mutation op: %q", m.Op())
+	}
+}
+
+// TblGarageOwnerClient is a client for the TblGarageOwner schema.
+type TblGarageOwnerClient struct {
+	config
+}
+
+// NewTblGarageOwnerClient returns a client for the TblGarageOwner from the given config.
+func NewTblGarageOwnerClient(c config) *TblGarageOwnerClient {
+	return &TblGarageOwnerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tblgarageowner.Hooks(f(g(h())))`.
+func (c *TblGarageOwnerClient) Use(hooks ...Hook) {
+	c.hooks.TblGarageOwner = append(c.hooks.TblGarageOwner, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tblgarageowner.Intercept(f(g(h())))`.
+func (c *TblGarageOwnerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TblGarageOwner = append(c.inters.TblGarageOwner, interceptors...)
+}
+
+// Create returns a builder for creating a TblGarageOwner entity.
+func (c *TblGarageOwnerClient) Create() *TblGarageOwnerCreate {
+	mutation := newTblGarageOwnerMutation(c.config, OpCreate)
+	return &TblGarageOwnerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TblGarageOwner entities.
+func (c *TblGarageOwnerClient) CreateBulk(builders ...*TblGarageOwnerCreate) *TblGarageOwnerCreateBulk {
+	return &TblGarageOwnerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TblGarageOwnerClient) MapCreateBulk(slice any, setFunc func(*TblGarageOwnerCreate, int)) *TblGarageOwnerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TblGarageOwnerCreateBulk{err: fmt.Errorf("calling to TblGarageOwnerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TblGarageOwnerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TblGarageOwnerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TblGarageOwner.
+func (c *TblGarageOwnerClient) Update() *TblGarageOwnerUpdate {
+	mutation := newTblGarageOwnerMutation(c.config, OpUpdate)
+	return &TblGarageOwnerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TblGarageOwnerClient) UpdateOne(tgo *TblGarageOwner) *TblGarageOwnerUpdateOne {
+	mutation := newTblGarageOwnerMutation(c.config, OpUpdateOne, withTblGarageOwner(tgo))
+	return &TblGarageOwnerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TblGarageOwnerClient) UpdateOneID(id string) *TblGarageOwnerUpdateOne {
+	mutation := newTblGarageOwnerMutation(c.config, OpUpdateOne, withTblGarageOwnerID(id))
+	return &TblGarageOwnerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TblGarageOwner.
+func (c *TblGarageOwnerClient) Delete() *TblGarageOwnerDelete {
+	mutation := newTblGarageOwnerMutation(c.config, OpDelete)
+	return &TblGarageOwnerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TblGarageOwnerClient) DeleteOne(tgo *TblGarageOwner) *TblGarageOwnerDeleteOne {
+	return c.DeleteOneID(tgo.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TblGarageOwnerClient) DeleteOneID(id string) *TblGarageOwnerDeleteOne {
+	builder := c.Delete().Where(tblgarageowner.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TblGarageOwnerDeleteOne{builder}
+}
+
+// Query returns a query builder for TblGarageOwner.
+func (c *TblGarageOwnerClient) Query() *TblGarageOwnerQuery {
+	return &TblGarageOwnerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTblGarageOwner},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TblGarageOwner entity by its id.
+func (c *TblGarageOwnerClient) Get(ctx context.Context, id string) (*TblGarageOwner, error) {
+	return c.Query().Where(tblgarageowner.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TblGarageOwnerClient) GetX(ctx context.Context, id string) *TblGarageOwner {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the User edge of a TblGarageOwner.
+func (c *TblGarageOwnerClient) QueryUser(tgo *TblGarageOwner) *TblUSersQuery {
+	query := (&TblUSersClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := tgo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblgarageowner.Table, tblgarageowner.FieldID, id),
+			sqlgraph.To(tblusers.Table, tblusers.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, tblgarageowner.UserTable, tblgarageowner.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(tgo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryNameInitial queries the NameInitial edge of a TblGarageOwner.
+func (c *TblGarageOwnerClient) QueryNameInitial(tgo *TblGarageOwner) *TblEnumQuery {
+	query := (&TblEnumClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := tgo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblgarageowner.Table, tblgarageowner.FieldID, id),
+			sqlgraph.To(tblenum.Table, tblenum.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, tblgarageowner.NameInitialTable, tblgarageowner.NameInitialColumn),
+		)
+		fromV = sqlgraph.Neighbors(tgo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOwnerPhoto queries the OwnerPhoto edge of a TblGarageOwner.
+func (c *TblGarageOwnerClient) QueryOwnerPhoto(tgo *TblGarageOwner) *TblDocumentQuery {
+	query := (&TblDocumentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := tgo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblgarageowner.Table, tblgarageowner.FieldID, id),
+			sqlgraph.To(tbldocument.Table, tbldocument.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, tblgarageowner.OwnerPhotoTable, tblgarageowner.OwnerPhotoColumn),
+		)
+		fromV = sqlgraph.Neighbors(tgo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAddress queries the Address edge of a TblGarageOwner.
+func (c *TblGarageOwnerClient) QueryAddress(tgo *TblGarageOwner) *TblAddressQuery {
+	query := (&TblAddressClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := tgo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblgarageowner.Table, tblgarageowner.FieldID, id),
+			sqlgraph.To(tbladdress.Table, tbladdress.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, tblgarageowner.AddressTable, tblgarageowner.AddressColumn),
+		)
+		fromV = sqlgraph.Neighbors(tgo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TblGarageOwnerClient) Hooks() []Hook {
+	hooks := c.hooks.TblGarageOwner
+	return append(hooks[:len(hooks):len(hooks)], tblgarageowner.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *TblGarageOwnerClient) Interceptors() []Interceptor {
+	inters := c.inters.TblGarageOwner
+	return append(inters[:len(inters):len(inters)], tblgarageowner.Interceptors[:]...)
+}
+
+func (c *TblGarageOwnerClient) mutate(ctx context.Context, m *TblGarageOwnerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TblGarageOwnerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TblGarageOwnerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TblGarageOwnerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TblGarageOwnerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("entgen: unknown TblGarageOwner mutation op: %q", m.Op())
 	}
 }
 
@@ -450,6 +1143,22 @@ func (c *TblUSersClient) GetX(ctx context.Context, id string) *TblUSers {
 	return obj
 }
 
+// QueryOwner queries the Owner edge of a TblUSers.
+func (c *TblUSersClient) QueryOwner(tu *TblUSers) *TblGarageOwnerQuery {
+	query := (&TblGarageOwnerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := tu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tblusers.Table, tblusers.FieldID, id),
+			sqlgraph.To(tblgarageowner.Table, tblgarageowner.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, tblusers.OwnerTable, tblusers.OwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(tu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TblUSersClient) Hooks() []Hook {
 	hooks := c.hooks.TblUSers
@@ -480,9 +1189,11 @@ func (c *TblUSersClient) mutate(ctx context.Context, m *TblUSersMutation) (Value
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		TblSuperAdmin, TblUSers []ent.Hook
+		TblAddress, TblDocument, TblEnum, TblGarageOwner, TblSuperAdmin,
+		TblUSers []ent.Hook
 	}
 	inters struct {
-		TblSuperAdmin, TblUSers []ent.Interceptor
+		TblAddress, TblDocument, TblEnum, TblGarageOwner, TblSuperAdmin,
+		TblUSers []ent.Interceptor
 	}
 )

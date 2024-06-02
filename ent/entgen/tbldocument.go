@@ -4,8 +4,8 @@ package entgen
 
 import (
 	"fmt"
+	"rr-backend/ent/entgen/tbldocument"
 	"rr-backend/ent/entgen/tblgarageowner"
-	"rr-backend/ent/entgen/tblusers"
 	"strings"
 	"time"
 
@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// TblUSers is the model entity for the TblUSers schema.
-type TblUSers struct {
+// TblDocument is the model entity for the TblDocument schema.
+type TblDocument struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
@@ -34,46 +34,50 @@ type TblUSers struct {
 	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
 	// DeletedAt holds the value of the "DeletedAt" field.
 	DeletedAt *time.Time `json:"DeletedAt,omitempty"`
-	// UserName holds the value of the "UserName" field.
-	UserName string `json:"UserName,omitempty"`
-	// Password holds the value of the "Password" field.
-	Password string `json:"Password,omitempty"`
-	// Email holds the value of the "Email" field.
-	Email *string `json:"Email,omitempty"`
+	// Name holds the value of the "Name" field.
+	Name string `json:"Name,omitempty"`
+	// RelativePath holds the value of the "RelativePath" field.
+	RelativePath string `json:"RelativePath,omitempty"`
+	// URL holds the value of the "URL" field.
+	URL string `json:"URL,omitempty"`
+	// SizeInBytes holds the value of the "SizeInBytes" field.
+	SizeInBytes float64 `json:"SizeInBytes,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TblUSersQuery when eager-loading is set.
-	Edges        TblUSersEdges `json:"edges"`
+	// The values are being populated by the TblDocumentQuery when eager-loading is set.
+	Edges        TblDocumentEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// TblUSersEdges holds the relations/edges for other nodes in the graph.
-type TblUSersEdges struct {
-	// Owner holds the value of the Owner edge.
-	Owner *TblGarageOwner `json:"Owner,omitempty"`
+// TblDocumentEdges holds the relations/edges for other nodes in the graph.
+type TblDocumentEdges struct {
+	// Photo holds the value of the Photo edge.
+	Photo *TblGarageOwner `json:"Photo,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// OwnerOrErr returns the Owner value or an error if the edge
+// PhotoOrErr returns the Photo value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e TblUSersEdges) OwnerOrErr() (*TblGarageOwner, error) {
-	if e.Owner != nil {
-		return e.Owner, nil
+func (e TblDocumentEdges) PhotoOrErr() (*TblGarageOwner, error) {
+	if e.Photo != nil {
+		return e.Photo, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: tblgarageowner.Label}
 	}
-	return nil, &NotLoadedError{edge: "Owner"}
+	return nil, &NotLoadedError{edge: "Photo"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*TblUSers) scanValues(columns []string) ([]any, error) {
+func (*TblDocument) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case tblusers.FieldID, tblusers.FieldCreatedBy, tblusers.FieldUpdatedBy, tblusers.FieldDeletedBy, tblusers.FieldIP, tblusers.FieldUserAgent, tblusers.FieldUserName, tblusers.FieldPassword, tblusers.FieldEmail:
+		case tbldocument.FieldSizeInBytes:
+			values[i] = new(sql.NullFloat64)
+		case tbldocument.FieldID, tbldocument.FieldCreatedBy, tbldocument.FieldUpdatedBy, tbldocument.FieldDeletedBy, tbldocument.FieldIP, tbldocument.FieldUserAgent, tbldocument.FieldName, tbldocument.FieldRelativePath, tbldocument.FieldURL:
 			values[i] = new(sql.NullString)
-		case tblusers.FieldCreatedAt, tblusers.FieldUpdatedAt, tblusers.FieldDeletedAt:
+		case tbldocument.FieldCreatedAt, tbldocument.FieldUpdatedAt, tbldocument.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -83,182 +87,188 @@ func (*TblUSers) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the TblUSers fields.
-func (tu *TblUSers) assignValues(columns []string, values []any) error {
+// to the TblDocument fields.
+func (td *TblDocument) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case tblusers.FieldID:
+		case tbldocument.FieldID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				tu.ID = value.String
+				td.ID = value.String
 			}
-		case tblusers.FieldCreatedBy:
+		case tbldocument.FieldCreatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedBy", values[i])
 			} else if value.Valid {
-				tu.CreatedBy = new(string)
-				*tu.CreatedBy = value.String
+				td.CreatedBy = new(string)
+				*td.CreatedBy = value.String
 			}
-		case tblusers.FieldUpdatedBy:
+		case tbldocument.FieldUpdatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UpdatedBy", values[i])
 			} else if value.Valid {
-				tu.UpdatedBy = new(string)
-				*tu.UpdatedBy = value.String
+				td.UpdatedBy = new(string)
+				*td.UpdatedBy = value.String
 			}
-		case tblusers.FieldDeletedBy:
+		case tbldocument.FieldDeletedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field DeletedBy", values[i])
 			} else if value.Valid {
-				tu.DeletedBy = new(string)
-				*tu.DeletedBy = value.String
+				td.DeletedBy = new(string)
+				*td.DeletedBy = value.String
 			}
-		case tblusers.FieldIP:
+		case tbldocument.FieldIP:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field IP", values[i])
 			} else if value.Valid {
-				tu.IP = new(string)
-				*tu.IP = value.String
+				td.IP = new(string)
+				*td.IP = value.String
 			}
-		case tblusers.FieldUserAgent:
+		case tbldocument.FieldUserAgent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field UserAgent", values[i])
 			} else if value.Valid {
-				tu.UserAgent = new(string)
-				*tu.UserAgent = value.String
+				td.UserAgent = new(string)
+				*td.UserAgent = value.String
 			}
-		case tblusers.FieldCreatedAt:
+		case tbldocument.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
 			} else if value.Valid {
-				tu.CreatedAt = value.Time
+				td.CreatedAt = value.Time
 			}
-		case tblusers.FieldUpdatedAt:
+		case tbldocument.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
 			} else if value.Valid {
-				tu.UpdatedAt = value.Time
+				td.UpdatedAt = value.Time
 			}
-		case tblusers.FieldDeletedAt:
+		case tbldocument.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field DeletedAt", values[i])
 			} else if value.Valid {
-				tu.DeletedAt = new(time.Time)
-				*tu.DeletedAt = value.Time
+				td.DeletedAt = new(time.Time)
+				*td.DeletedAt = value.Time
 			}
-		case tblusers.FieldUserName:
+		case tbldocument.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field UserName", values[i])
+				return fmt.Errorf("unexpected type %T for field Name", values[i])
 			} else if value.Valid {
-				tu.UserName = value.String
+				td.Name = value.String
 			}
-		case tblusers.FieldPassword:
+		case tbldocument.FieldRelativePath:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field Password", values[i])
+				return fmt.Errorf("unexpected type %T for field RelativePath", values[i])
 			} else if value.Valid {
-				tu.Password = value.String
+				td.RelativePath = value.String
 			}
-		case tblusers.FieldEmail:
+		case tbldocument.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field Email", values[i])
+				return fmt.Errorf("unexpected type %T for field URL", values[i])
 			} else if value.Valid {
-				tu.Email = new(string)
-				*tu.Email = value.String
+				td.URL = value.String
+			}
+		case tbldocument.FieldSizeInBytes:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field SizeInBytes", values[i])
+			} else if value.Valid {
+				td.SizeInBytes = value.Float64
 			}
 		default:
-			tu.selectValues.Set(columns[i], values[i])
+			td.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the TblUSers.
+// Value returns the ent.Value that was dynamically selected and assigned to the TblDocument.
 // This includes values selected through modifiers, order, etc.
-func (tu *TblUSers) Value(name string) (ent.Value, error) {
-	return tu.selectValues.Get(name)
+func (td *TblDocument) Value(name string) (ent.Value, error) {
+	return td.selectValues.Get(name)
 }
 
-// QueryOwner queries the "Owner" edge of the TblUSers entity.
-func (tu *TblUSers) QueryOwner() *TblGarageOwnerQuery {
-	return NewTblUSersClient(tu.config).QueryOwner(tu)
+// QueryPhoto queries the "Photo" edge of the TblDocument entity.
+func (td *TblDocument) QueryPhoto() *TblGarageOwnerQuery {
+	return NewTblDocumentClient(td.config).QueryPhoto(td)
 }
 
-// Update returns a builder for updating this TblUSers.
-// Note that you need to call TblUSers.Unwrap() before calling this method if this TblUSers
+// Update returns a builder for updating this TblDocument.
+// Note that you need to call TblDocument.Unwrap() before calling this method if this TblDocument
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (tu *TblUSers) Update() *TblUSersUpdateOne {
-	return NewTblUSersClient(tu.config).UpdateOne(tu)
+func (td *TblDocument) Update() *TblDocumentUpdateOne {
+	return NewTblDocumentClient(td.config).UpdateOne(td)
 }
 
-// Unwrap unwraps the TblUSers entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the TblDocument entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (tu *TblUSers) Unwrap() *TblUSers {
-	_tx, ok := tu.config.driver.(*txDriver)
+func (td *TblDocument) Unwrap() *TblDocument {
+	_tx, ok := td.config.driver.(*txDriver)
 	if !ok {
-		panic("entgen: TblUSers is not a transactional entity")
+		panic("entgen: TblDocument is not a transactional entity")
 	}
-	tu.config.driver = _tx.drv
-	return tu
+	td.config.driver = _tx.drv
+	return td
 }
 
 // String implements the fmt.Stringer.
-func (tu *TblUSers) String() string {
+func (td *TblDocument) String() string {
 	var builder strings.Builder
-	builder.WriteString("TblUSers(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", tu.ID))
-	if v := tu.CreatedBy; v != nil {
+	builder.WriteString("TblDocument(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", td.ID))
+	if v := td.CreatedBy; v != nil {
 		builder.WriteString("CreatedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.UpdatedBy; v != nil {
+	if v := td.UpdatedBy; v != nil {
 		builder.WriteString("UpdatedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.DeletedBy; v != nil {
+	if v := td.DeletedBy; v != nil {
 		builder.WriteString("DeletedBy=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.IP; v != nil {
+	if v := td.IP; v != nil {
 		builder.WriteString("IP=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := tu.UserAgent; v != nil {
+	if v := td.UserAgent; v != nil {
 		builder.WriteString("UserAgent=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("CreatedAt=")
-	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(td.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("UpdatedAt=")
-	builder.WriteString(tu.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(td.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := tu.DeletedAt; v != nil {
+	if v := td.DeletedAt; v != nil {
 		builder.WriteString("DeletedAt=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("UserName=")
-	builder.WriteString(tu.UserName)
+	builder.WriteString("Name=")
+	builder.WriteString(td.Name)
 	builder.WriteString(", ")
-	builder.WriteString("Password=")
-	builder.WriteString(tu.Password)
+	builder.WriteString("RelativePath=")
+	builder.WriteString(td.RelativePath)
 	builder.WriteString(", ")
-	if v := tu.Email; v != nil {
-		builder.WriteString("Email=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("URL=")
+	builder.WriteString(td.URL)
+	builder.WriteString(", ")
+	builder.WriteString("SizeInBytes=")
+	builder.WriteString(fmt.Sprintf("%v", td.SizeInBytes))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// TblUSersSlice is a parsable slice of TblUSers.
-type TblUSersSlice []*TblUSers
+// TblDocuments is a parsable slice of TblDocument.
+type TblDocuments []*TblDocument

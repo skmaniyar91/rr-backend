@@ -12,6 +12,14 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// TblAddress is the client for interacting with the TblAddress builders.
+	TblAddress *TblAddressClient
+	// TblDocument is the client for interacting with the TblDocument builders.
+	TblDocument *TblDocumentClient
+	// TblEnum is the client for interacting with the TblEnum builders.
+	TblEnum *TblEnumClient
+	// TblGarageOwner is the client for interacting with the TblGarageOwner builders.
+	TblGarageOwner *TblGarageOwnerClient
 	// TblSuperAdmin is the client for interacting with the TblSuperAdmin builders.
 	TblSuperAdmin *TblSuperAdminClient
 	// TblUSers is the client for interacting with the TblUSers builders.
@@ -147,6 +155,10 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.TblAddress = NewTblAddressClient(tx.config)
+	tx.TblDocument = NewTblDocumentClient(tx.config)
+	tx.TblEnum = NewTblEnumClient(tx.config)
+	tx.TblGarageOwner = NewTblGarageOwnerClient(tx.config)
 	tx.TblSuperAdmin = NewTblSuperAdminClient(tx.config)
 	tx.TblUSers = NewTblUSersClient(tx.config)
 }
@@ -158,7 +170,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: TblSuperAdmin.QueryXXX(), the query will be executed
+// applies a query, for example: TblAddress.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

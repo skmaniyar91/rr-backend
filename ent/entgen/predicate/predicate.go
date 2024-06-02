@@ -6,6 +6,18 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// TblAddress is the predicate function for tbladdress builders.
+type TblAddress func(*sql.Selector)
+
+// TblDocument is the predicate function for tbldocument builders.
+type TblDocument func(*sql.Selector)
+
+// TblEnum is the predicate function for tblenum builders.
+type TblEnum func(*sql.Selector)
+
+// TblGarageOwner is the predicate function for tblgarageowner builders.
+type TblGarageOwner func(*sql.Selector)
+
 // TblSuperAdmin is the predicate function for tblsuperadmin builders.
 type TblSuperAdmin func(*sql.Selector)
 
