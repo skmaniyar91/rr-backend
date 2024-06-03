@@ -14,7 +14,17 @@ CREATE TABLE IF NOT EXISTS Tbl_Address(
     State VARCHAR(50) NOT NULL,
     Country VARCHAR(50) NOT NULL,
 
-    PostalCode VARCHAR(50) NULL
+    PostalCode VARCHAR(50) NULL,
+
+    IP VARCHAR(155) NULL,
+    UserAgent VARCHAR(155),
+
+    CreatedAt DATETIME NOT NULL,
+    UpdatedAt DATETIME NOT NULL,
+    DeletedAt DATETIME NULL,
+    CreatedBy VARCHAR(40) NULL,
+    UpdatedBy VARCHAR(40) NULL,
+    DeletedBy VARCHAR(40) NULL
 );
 -- +goose StatementEnd
 

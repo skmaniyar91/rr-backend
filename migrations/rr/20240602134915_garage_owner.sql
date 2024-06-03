@@ -22,7 +22,17 @@ CREATE TABLE IF NOT EXISTS Tbl_GarageOwner(
     CONSTRAINT OwnerPhoto FOREIGN KEY (Photo) REFERENCES Tbl_Document(Id_ulid),
 
     Address VARCHAR(40) NOT NULL,
-    CONSTRAINT OwnerAddress FOREIGN KEY (Address) REFERENCES Tbl_Address(Id_ulid)
+    CONSTRAINT OwnerAddress FOREIGN KEY (Address) REFERENCES Tbl_Address(Id_ulid),
+
+    IP VARCHAR(155) NULL,
+    UserAgent VARCHAR(155),
+
+    CreatedAt DATETIME NOT NULL,
+    UpdatedAt DATETIME NOT NULL,
+    DeletedAt DATETIME NULL,
+    CreatedBy VARCHAR(40) NULL,
+    UpdatedBy VARCHAR(40) NULL,
+    DeletedBy VARCHAR(40) NULL
 );
 -- +goose StatementEnd
 
