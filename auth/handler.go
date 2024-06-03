@@ -24,6 +24,18 @@ func NewAuthHandler(config config.IAppConfig) IAuthHandler {
 	}
 }
 
+// Login
+//
+//	@Summary		Login
+//	@Description	Login
+//	@Tags			Auth API
+//	@Accept			mpfd
+//	@Produce		json
+//	@Param			username	formData	string	true	"UserName"
+//	@Param			password	formData	string	true	"Password"
+//	@Success		200			{object}	RSToken
+//	@Failure		500			{string}	string
+//	@Router			/api/rr-backend/login [post]
 func (s *sAuthHandler) Login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
@@ -40,11 +52,30 @@ func (s *sAuthHandler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, token)
 }
 
+// LoginTest
+//
+//	@Summary		Login Test
+//	@Description	Login Test
+//	@Tags			Auth API
+//	@Accept			mpfd
+//	@Produce		json
+//	@Security		JWTAuthentication
+//	@Success		200	{string}	string
+//	@Failure		500	{string}	string
+//	@Router			/api/rr-backend/login-test [get]
 func (s *sAuthHandler) LoginTest(c echo.Context) error {
 	id := c.Get("UserId")
 	return c.JSON(http.StatusOK, fmt.Sprintf("yehh, your authentication works, %s", id.(string)))
 }
 
+// Login
+//
+//	@Summary		Logout
+//	@Description	Logout
+//	@Tags			Auth API
+//	@Success		200
+//	@Failure		500	{string}	string
+//	@Router			/api/rr-backend/logout [get]
 func (s *sAuthHandler) Logout(c echo.Context) error {
 	c.Set("UserId", "")
 

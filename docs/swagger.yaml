@@ -1,7 +1,83 @@
+definitions:
+  auth.RSToken:
+    properties:
+      accessToken:
+        type: string
+    type: object
 info:
   contact: {}
   description: This is RR-BackEnd
   title: RR-Back-End
   version: "1.0"
-paths: {}
+paths:
+  /api/rr-backend/login:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Login
+      parameters:
+      - description: UserName
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.RSToken'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - Auth API
+  /api/rr-backend/login-test:
+    get:
+      consumes:
+      - multipart/form-data
+      description: Login Test
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - JWTAuthentication: []
+      summary: Login Test
+      tags:
+      - Auth API
+  /api/rr-backend/logout:
+    get:
+      description: Logout
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Logout
+      tags:
+      - Auth API
+securityDefinitions:
+  JWTAuthentication:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: access token
+    type: apiKey
 swagger: "2.0"
