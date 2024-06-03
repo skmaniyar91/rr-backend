@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"rr-backend/config/env"
 	"time"
 
@@ -31,11 +30,11 @@ func ValidateToken(tokenStr string) (*Claims, error) {
 	})
 
 	if err != nil {
-		return &Claims{}, errors.New("invalid token")
+		return &Claims{}, err
 	}
 
 	if !token.Valid {
-		return &Claims{}, errors.New("invalid token")
+		return &Claims{}, err
 	}
 
 	claims, ok := token.Claims.(*Claims)

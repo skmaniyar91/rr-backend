@@ -46,7 +46,7 @@ func (s *sAuthHandler) Login(c echo.Context) error {
 
 	token, err := s.storage.Login(username, password)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, err.Error())
+		return err
 	}
 
 	return c.JSON(http.StatusOK, token)

@@ -2,9 +2,9 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"rr-backend/config"
 	"rr-backend/ent/entgen"
+	"rr-backend/errorx"
 )
 
 type IAuthStorage interface {
@@ -19,21 +19,21 @@ type sAuthStorage struct {
 func (s *sAuthStorage) Login(username string, password string) (RSToken, error) {
 	exist, err := getUsersQuery(s.entClient, username, password).Exist(context.Background())
 	if err != nil {
-		return RSToken{}, errors.New(err.Error())
+		return RSToken{}, errorx.WrapENTError("auth", err)
 	}
 
 	if !exist {
-		return RSToken{}, errors.New("User Not Found")
+		return RSToken{}, errorx.NewUnProccessableEntity("auth", "User Not Found")
 	}
 
 	entUser, err := getUsersQuery(s.entClient, username, password).Only(context.Background())
 	if err != nil {
-		return RSToken{}, errors.New(err.Error())
+		return RSToken{}, errorx.WrapENTError("auth", err)
 	}
 
 	token, err := CreateToken(entUser.ID)
 	if err != nil {
-		return RSToken{}, errors.New(err.Error())
+		return RSToken{}, errorx.WrapENTError("auth", err)
 	}
 
 	rsToken := RSToken{AccessToken: token}

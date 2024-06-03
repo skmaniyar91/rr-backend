@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"net/http"
+	"rr-backend/errorx"
 
 	"github.com/labstack/echo/v4"
 )
@@ -11,16 +11,16 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		tokenStr := c.Request().Header.Get("Authorization")
 
 		if tokenStr == "" {
-			return c.JSON(http.StatusBadRequest, "token not found")
+			return errorx.NewUnProccessableEntity("auth", "Token not found")
 		}
 		tokenStr = tokenStr[len("Bearer "):]
 		if tokenStr == "" {
-			return c.JSON(http.StatusBadRequest, "token not found")
+			return errorx.NewUnProccessableEntity("auth", "Token not found")
 		}
 
 		claims, err := ValidateToken(tokenStr)
 		if err != nil {
-			return err
+			return errorx.NewUnauthorizedError("auth", "Invalid token")
 		}
 
 		c.Set("UserId", claims.UserId)
