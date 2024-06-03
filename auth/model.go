@@ -9,7 +9,7 @@ type (
 		jwt.StandardClaims
 	}
 	RSToken struct {
-		AccessToken string `json:accessToken`
+		AccessToken string `json:"accessToken"`
 	}
 )
 
