@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const Domain = "users"
+
 // request
 type RQUser struct {
 	Id       string  `-`

@@ -3,9 +3,9 @@ package users
 import (
 	"context"
 	"errors"
-	"fmt"
 	"rr-backend/config"
 	"rr-backend/ent/entgen"
+	"rr-backend/errorx"
 	"rr-backend/lib"
 	"rr-backend/lib/restmdl"
 )
@@ -36,16 +36,16 @@ func (s *sUserStorage) CreateUser(rq User, rmd restmdl.RequestMetaData) (string,
 		// check if username already exists.
 		exist, err := getUserTxQuery(tx, rq.Name).Exist(ctx)
 		if err != nil {
-			return err
+			return errorx.WrapENTError(Domain, err)
 		}
 
 		if exist {
-			return errors.New("username already exist")
+			return errorx.NewUnProccessableEntity(Domain, "User name already exists")
 		}
 
 		entUser, err := getCreateUserQuery(tx, rq).Save(ctx)
 		if err != nil {
-			return err
+			return errorx.WrapENTError(Domain, err)
 		}
 		id = entUser.ID
 
@@ -56,7 +56,7 @@ func (s *sUserStorage) CreateUser(rq User, rmd restmdl.RequestMetaData) (string,
 		return "", err
 	}
 
-	return id, err
+	return id, nil
 }
 
 // DeleteUser implements IUserStorage.
@@ -67,7 +67,7 @@ func (s *sUserStorage) DeleteUser(id string, rmd restmdl.RequestMetaData) error 
 		// check if username already exists.
 		err := getDeleteUserQuery(tx, id).Exec(ctx)
 		if err != nil {
-			return err
+			return errorx.WrapENTError(Domain, err)
 		}
 
 		return nil
@@ -77,14 +77,14 @@ func (s *sUserStorage) DeleteUser(id string, rmd restmdl.RequestMetaData) error 
 		return err
 	}
 
-	return err
+	return nil
 }
 
 // GetUser implements IUserStorage.
 func (s *sUserStorage) GetUser(id string) (User, error) {
 	entUser, err := getUserQuery(s.entClient, id).Only(context.Background())
 	if err != nil {
-		return User{}, fmt.Errorf("from get user, %s", err.Error())
+		return User{}, errorx.WrapENTError(Domain, err)
 	}
 
 	var user User
@@ -101,7 +101,7 @@ func (s *sUserStorage) UpdateUser(rq User, rmd restmdl.RequestMetaData) error {
 
 		entUser, err := getUserQueryTx(tx, rq.Id).Only(ctx)
 		if err != nil {
-			return err
+			return errorx.WrapENTError(Domain, err)
 		}
 
 		if !rq.UpdatedAt.Equal(entUser.UpdatedAt) {
@@ -110,14 +110,13 @@ func (s *sUserStorage) UpdateUser(rq User, rmd restmdl.RequestMetaData) error {
 
 		err = getUpdateUserQuery(tx, rq).Exec(ctx)
 		if err != nil {
-			return err
+			return errorx.WrapENTError(Domain, err)
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
