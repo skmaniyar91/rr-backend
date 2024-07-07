@@ -2,6 +2,7 @@ package errorx
 
 import (
 	"net/http"
+	"rr-backend/config/logx"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -12,7 +13,7 @@ type BaseError struct {
 	Domain      string `json:"domain"`
 	Discription string `json:"discription"`
 	Message     string `json:"message"`
-	err         error
+	Err         error  `json:"error"`
 
 	ErrorType  string `json:"errorType"`
 	StatusCode int    `json:"statusCode"`
@@ -23,7 +24,7 @@ func (b BaseError) Error() string {
 }
 
 func WrapENTError(domain string, err error) error {
-	return &BaseError{
+	be := BaseError{
 		Id: ulid.Make().String(),
 
 		Domain:      domain,
@@ -31,20 +32,26 @@ func WrapENTError(domain string, err error) error {
 
 		ErrorType: ErrorTypeEnt,
 	}
+	logx.Logger().Error(be.Message, be)
+
+	return be
 }
 
 func WrapError(domain string, err error) error {
-	return BaseError{
+	be := BaseError{
 		Id: ulid.Make().String(),
 
 		Domain:      domain,
 		Discription: err.Error(),
-		err:         err,
+		Err:         err,
 	}
+	logx.Logger().Error(be.Message, be)
+
+	return be
 }
 
 func NewUnProccessableEntity(domain, message string) error {
-	return BaseError{
+	be := BaseError{
 		Id: ulid.Make().String(),
 
 		Domain:  domain,
@@ -54,10 +61,14 @@ func NewUnProccessableEntity(domain, message string) error {
 
 		StatusCode: http.StatusUnprocessableEntity,
 	}
+
+	logx.Logger().Error(be.Message, be)
+
+	return be
 }
 
 func NewUnauthorizedError(domain, message string) error {
-	return BaseError{
+	be := BaseError{
 		Id: ulid.Make().String(),
 
 		Domain:  domain,
@@ -67,4 +78,7 @@ func NewUnauthorizedError(domain, message string) error {
 
 		StatusCode: http.StatusUnauthorized,
 	}
+	logx.Logger().Error(be.Message, be)
+
+	return be
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"rr-backend/config"
 	"rr-backend/config/env"
+	"rr-backend/config/logx"
 	"rr-backend/errorx"
 	"rr-backend/routes"
 
@@ -11,7 +12,7 @@ import (
 
 func Start() {
 	env.LoadEnv()
-
+	logx.InitLogger()
 	config := config.NewAppConfig()
 
 	RunMigration(config.GetSqlxClient().DB)
