@@ -15,7 +15,7 @@ func HandleError(err error) BaseError {
 		var be BaseError
 		be.Message, _ = typedError.Message.(string)
 		be.Discription = typedError.Error()
-		be.err = err
+		be.Err = err
 		be.StatusCode = typedError.Code
 
 		return be
@@ -24,7 +24,7 @@ func HandleError(err error) BaseError {
 		var be BaseError
 		be.Message = "Something went wrong"
 		be.Discription = err.Error()
-		be.err = err
+		be.Err = err
 		be.StatusCode = http.StatusInternalServerError
 
 		return be
@@ -50,7 +50,7 @@ func HandleBaseError(be BaseError) BaseError {
 }
 
 func HandlerENTError(be BaseError) BaseError {
-	switch typedErr := be.err.(type) {
+	switch typedErr := be.Err.(type) {
 	case *entgen.NotFoundError:
 		be.Message = "Some thing not found"
 		be.StatusCode = http.StatusNotFound

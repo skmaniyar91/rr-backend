@@ -15,16 +15,6 @@ CREATE TABLE IF NOT EXISTS Tbl_Enum(
     DeletedAt DATETIME NULL,
     CreatedBy VARCHAR(40) NULL,
     UpdatedBy VARCHAR(40) NULL,
-    DeletedBy VARCHAR(40) NULL,
-
-    IP VARCHAR(155) NULL,
-    UserAgent VARCHAR(155),
-
-    CreatedAt DATETIME NOT NULL,
-    UpdatedAt DATETIME NOT NULL,
-    DeletedAt DATETIME NULL,
-    CreatedBy VARCHAR(40) NULL,
-    UpdatedBy VARCHAR(40) NULL,
     DeletedBy VARCHAR(40) NULL
 );
 -- +goose StatementEnd

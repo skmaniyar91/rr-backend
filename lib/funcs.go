@@ -3,6 +3,7 @@ package lib
 import (
 	"context"
 	"rr-backend/ent/entgen"
+	"rr-backend/errorx"
 	"rr-backend/lib/restmdl"
 
 	"github.com/labstack/echo/v4"
@@ -30,7 +31,7 @@ func GetContextWithRequestMetadata(rmd restmdl.RequestMetaData) context.Context 
 func RunInEntTransaction(entClient *entgen.Client, ctx context.Context, EntFunc func(tx *entgen.Tx) error) error {
 	tx, err := entClient.Tx(ctx)
 	if err != nil {
-		return err
+		return errorx.WrapENTError("ent_transaction", err)
 	}
 
 	err = EntFunc(tx)
