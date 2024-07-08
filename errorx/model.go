@@ -15,8 +15,9 @@ type BaseError struct {
 	Message     string `json:"message"`
 	Err         error  `json:"error"`
 
-	ErrorType  string `json:"errorType"`
-	StatusCode int    `json:"statusCode"`
+	ErrorType       string            `json:"errorType"`
+	ContextualError map[string]string `json:contextualError`
+	StatusCode      int               `json:"statusCode"`
 }
 
 func (b BaseError) Error() string {
@@ -31,8 +32,23 @@ func WrapENTError(domain string, err error) error {
 		Discription: err.Error(),
 
 		ErrorType: ErrorTypeEnt,
+		Err:       err,
 	}
 	logx.Logger().Error(be.Message, be)
+
+	return be
+}
+
+func WrapBindingError(domain string, err error) error {
+	be := BaseError{
+		Id: ulid.Make().String(),
+
+		Domain:      domain,
+		ErrorType:   ErrorTypeBindingError,
+		Discription: err.Error(),
+		Err:         err,
+	}
+	logx.Logger().Error(err.Error(), be)
 
 	return be
 }
@@ -43,6 +59,7 @@ func WrapError(domain string, err error) error {
 
 		Domain:      domain,
 		Discription: err.Error(),
+		Message:     err.Error(),
 		Err:         err,
 	}
 	logx.Logger().Error(be.Message, be)

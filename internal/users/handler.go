@@ -3,7 +3,9 @@ package users
 import (
 	"net/http"
 	"rr-backend/config"
+	"rr-backend/errorx"
 	"rr-backend/lib"
+	"rr-backend/lib/validation"
 
 	"github.com/labstack/echo/v4"
 )
@@ -29,16 +31,16 @@ func NewUserHandler(config config.IAppConfig) IUserHandler {
 func (s *sUserHandler) CreateUser(c echo.Context) error {
 	var rq RQUser
 
-	err := c.Bind(&rq)
+	err := validation.BindAndValidate(c, &rq)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "binding error")
+		return errorx.WrapBindingError(Domain, err)
 	}
 
 	rq.rmd = lib.GetRequestMetaData(c)
 
 	rs, err := s.userService.CreateUser(rq)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return err
 	}
 
 	return c.JSON(http.StatusOK, rs)
@@ -52,7 +54,7 @@ func (s *sUserHandler) DeleteUser(c echo.Context) error {
 
 	err := s.userService.DeleteUser(id, rmd)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 
 	return c.JSON(http.StatusOK, nil)
@@ -64,7 +66,7 @@ func (s *sUserHandler) GetUser(c echo.Context) error {
 
 	rs, err := s.userService.GetUser(id)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 
 	return c.JSON(http.StatusOK, rs)
@@ -75,13 +77,16 @@ func (s *sUserHandler) UpdateUser(c echo.Context) error {
 	var rq RQUser
 
 	rq.Id = c.Param("id")
-	c.Bind(&rq)
+	err := validation.BindAndValidate(c, &rq)
+	if err != nil {
+		return errorx.WrapBindingError(Domain, err)
+	}
 
 	rq.rmd = lib.GetRequestMetaData(c)
 
 	rs, err := s.userService.UpdateUser(rq)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 
 	return c.JSON(http.StatusOK, rs)

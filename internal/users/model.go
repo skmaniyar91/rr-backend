@@ -10,10 +10,10 @@ const Domain = "users"
 
 // request
 type RQUser struct {
-	Id       string  `-`
-	Name     string  `json:"name"`
-	Password string  `json:"password"`
-	Email    *string `json:"email"`
+	Id       string  `json:"-"`
+	Name     string  `json:"name" validate:"required,max=100"`
+	Password string  `json:"password" validate:"required,max=100"`
+	Email    *string `json:"email" validate:"omitempty,max=100"`
 
 	rmd restmdl.RequestMetaData
 
