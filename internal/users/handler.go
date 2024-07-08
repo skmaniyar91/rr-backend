@@ -31,7 +31,7 @@ func NewUserHandler(config config.IAppConfig) IUserHandler {
 func (s *sUserHandler) CreateUser(c echo.Context) error {
 	var rq RQUser
 
-	err := validation.BindAndValiate(c, &rq)
+	err := validation.BindAndValidate(c, &rq)
 	if err != nil {
 		return errorx.WrapBindingError(Domain, err)
 	}
@@ -77,7 +77,7 @@ func (s *sUserHandler) UpdateUser(c echo.Context) error {
 	var rq RQUser
 
 	rq.Id = c.Param("id")
-	err := validation.BindAndValiate(c, &rq)
+	err := validation.BindAndValidate(c, &rq)
 	if err != nil {
 		return errorx.WrapBindingError(Domain, err)
 	}

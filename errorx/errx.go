@@ -1,7 +1,6 @@
 package errorx
 
 import (
-	"fmt"
 	"net/http"
 	"rr-backend/ent/entgen"
 
@@ -35,7 +34,6 @@ func HandleError(err error) BaseError {
 }
 
 func HandleBaseError(be BaseError) BaseError {
-	fmt.Println("Information", be)
 	switch be.ErrorType {
 	case ErrorTypeEnt:
 		return HandlerENTError(be)

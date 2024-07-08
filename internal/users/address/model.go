@@ -21,17 +21,17 @@ type Address struct {
 type RQAddress struct {
 	Id string `json:"-"`
 
-	Line1 string  `json:"line1" validate:"trim,required,max=100"`
-	Line2 *string `json:"line2" validate:"omitempty,trim,required,max=100"`
-	Line3 *string `json:"line3" validate:"omitempty,trim,required,max=100"`
+	Line1 string  `json:"line1" validate:"required,max=100"`
+	Line2 *string `json:"line2" validate:"omitempty,required,max=100"`
+	Line3 *string `json:"line3" validate:"omitempty,required,max=100"`
 
-	City        string  `json:"city" validate:"trim,required,max=100"`
-	District    *string `json:"district" validate:"omitempty,trim,required,max=100"`
-	SubDistrict *string `json:"subDistrict" validate:"omitempty,trim,required,max=100"`
+	City        string  `json:"city" validate:"required,max=100"`
+	District    *string `json:"district" validate:"omitempty,required,max=100"`
+	SubDistrict *string `json:"subDistrict" validate:"omitempty,required,max=100"`
 
-	State      string `json:"state" validate:"trim,required,max=100"`
-	Country    string `json:"country" validate:"trim,required,max=100"`
-	PostalCode string `json:"postalCode" validate:"trim,required,max=100"`
+	State      string `json:"state" validate:"required,max=100"`
+	Country    string `json:"country" validate:"required,max=100"`
+	PostalCode string `json:"postalCode" validate:"required,max=100"`
 }
 
 // response

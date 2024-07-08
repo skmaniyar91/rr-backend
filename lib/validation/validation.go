@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func BindAndValiate(c echo.Context, model interface{}) error {
+func BindAndValidate(c echo.Context, model interface{}) error {
 	c.Bind(model)
 
 	validate := validator.New()

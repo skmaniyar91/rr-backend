@@ -1,0 +1,86 @@
+[1mdiff --git a/errorx/errx.go b/errorx/errx.go[m
+[1mindex bc1ee11..26df4c2 100644[m
+[1m--- a/errorx/errx.go[m
+[1m+++ b/errorx/errx.go[m
+[36m@@ -1,7 +1,6 @@[m
+ package errorx[m
+ [m
+ import ([m
+[31m-	"fmt"[m
+ 	"net/http"[m
+ 	"rr-backend/ent/entgen"[m
+ [m
+[36m@@ -35,7 +34,6 @@[m [mfunc HandleError(err error) BaseError {[m
+ }[m
+ [m
+ func HandleBaseError(be BaseError) BaseError {[m
+[31m-	fmt.Println("Information", be)[m
+ 	switch be.ErrorType {[m
+ 	case ErrorTypeEnt:[m
+ 		return HandlerENTError(be)[m
+[1mdiff --git a/internal/users/address/model.go b/internal/users/address/model.go[m
+[1mindex 0b401e5..3fdc354 100644[m
+[1m--- a/internal/users/address/model.go[m
+[1m+++ b/internal/users/address/model.go[m
+[36m@@ -21,17 +21,17 @@[m [mtype Address struct {[m
+ type RQAddress struct {[m
+ 	Id string `json:"-"`[m
+ [m
+[31m-	Line1 string  `json:"line1" validate:"trim,required,max=100"`[m
+[31m-	Line2 *string `json:"line2" validate:"omitempty,trim,required,max=100"`[m
+[31m-	Line3 *string `json:"line3" validate:"omitempty,trim,required,max=100"`[m
+[32m+[m	[32mLine1 string  `json:"line1" validate:"required,max=100"`[m
+[32m+[m	[32mLine2 *string `json:"line2" validate:"omitempty,required,max=100"`[m
+[32m+[m	[32mLine3 *string `json:"line3" validate:"omitempty,required,max=100"`[m
+ [m
+[31m-	City        string  `json:"city" validate:"trim,required,max=100"`[m
+[31m-	District    *string `json:"district" validate:"omitempty,trim,required,max=100"`[m
+[31m-	SubDistrict *string `json:"subDistrict" validate:"omitempty,trim,required,max=100"`[m
+[32m+[m	[32mCity        string  `json:"city" validate:"required,max=100"`[m
+[32m+[m	[32mDistrict    *string `json:"district" validate:"omitempty,required,max=100"`[m
+[32m+[m	[32mSubDistrict *string `json:"subDistrict" validate:"omitempty,required,max=100"`[m
+ [m
+[31m-	State      string `json:"state" validate:"trim,required,max=100"`[m
+[31m-	Country    string `json:"country" validate:"trim,required,max=100"`[m
+[31m-	PostalCode string `json:"postalCode" validate:"trim,required,max=100"`[m
+[32m+[m	[32mState      string `json:"state" validate:"required,max=100"`[m
+[32m+[m	[32mCountry    string `json:"country" validate:"required,max=100"`[m
+[32m+[m	[32mPostalCode string `json:"postalCode" validate:"required,max=100"`[m
+ }[m
+ [m
+ // response[m
+[1mdiff --git a/internal/users/handler.go b/internal/users/handler.go[m
+[1mindex 1b33aca..4aeb15d 100644[m
+[1m--- a/internal/users/handler.go[m
+[1m+++ b/internal/users/handler.go[m
+[36m@@ -31,7 +31,7 @@[m [mfunc NewUserHandler(config config.IAppConfig) IUserHandler {[m
+ func (s *sUserHandler) CreateUser(c echo.Context) error {[m
+ 	var rq RQUser[m
+ [m
+[31m-	err := validation.BindAndValiate(c, &rq)[m
+[32m+[m	[32merr := validation.BindAndValidate(c, &rq)[m
+ 	if err != nil {[m
+ 		return errorx.WrapBindingError(Domain, err)[m
+ 	}[m
+[36m@@ -77,7 +77,7 @@[m [mfunc (s *sUserHandler) UpdateUser(c echo.Context) error {[m
+ 	var rq RQUser[m
+ [m
+ 	rq.Id = c.Param("id")[m
+[31m-	err := validation.BindAndValiate(c, &rq)[m
+[32m+[m	[32merr := validation.BindAndValidate(c, &rq)[m
+ 	if err != nil {[m
+ 		return errorx.WrapBindingError(Domain, err)[m
+ 	}[m
+[1mdiff --git a/lib/validation/validation.go b/lib/validation/validation.go[m
+[1mindex decf5d2..c966ffa 100644[m
+[1m--- a/lib/validation/validation.go[m
+[1m+++ b/lib/validation/validation.go[m
+[36m@@ -5,7 +5,7 @@[m [mimport ([m
+ 	"github.com/labstack/echo/v4"[m
+ )[m
+ [m
+[31m-func BindAndValiate(c echo.Context, model interface{}) error {[m
+[32m+[m[32mfunc BindAndValidate(c echo.Context, model interface{}) error {[m
+ 	c.Bind(model)[m
+ [m
+ 	validate := validator.New()[m
